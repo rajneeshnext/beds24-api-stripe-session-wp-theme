@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 // 1. CONFIGURACIÓN INICIAL DEL TEMA
 // =============================================================================
 add_filter('wp_mail_from', function($email){
-    return 'info@apartamentosestanques.com';
+    return 'admin@websitesdaddy.com';
 });
 add_action('after_setup_theme', 'apartamentos_estanques_setup');
 function apartamentos_estanques_setup() {
@@ -61,33 +61,30 @@ add_action('admin_init', function () {
 });
 function check_room_availability($arrival, $departure, $listing_json, $room_json, $room_id) {
 
-    // ----------------------------
-    // Arrival / departure missing
-    // ----------------------------
     if (empty($arrival) || empty($departure)) {
-        return pll__('Please select arrival and departure dates.');
+        return "Please select arrival and departure dates.";
     }
 
-    $start  = strtotime($arrival);
-    $end    = strtotime($departure); // end date NOT included
+    $start = strtotime($arrival);
+    $end   = strtotime($departure); // end date NOT included
     $nights = ($end - $start) / 86400;
-
+    
     // ----------------------------
     // 3️⃣ Minimum stay check (per room JSON)
     // ----------------------------
     $required_min = 1;
-	//print_r($room_json);
+
     foreach ($room_json as $date => $info) {
+        // min_stay applies only inside the stay range
         for ($d = $start; $d < $end; $d += 86400) {
-			if ((string)$date === date("Ymd", $d)) {
-			    $required_min = max($required_min, intval($info['min_stay']));
+            if ($date == date("Ymd", $d)) {
+                $required_min = max($required_min, intval($info['min_stay']));
             }
         }
     }
-	//return $nights."====".$required_min;
+
     if ($nights < $required_min) {
-        $text = pll__('Minimum stay is');
-        return esc_html($text . ' ' . $required_min . ' ' . pll__('nights') . '.');
+        return "Minimum stay is {$required_min} nights.";
     }
 
     // ----------------------------
@@ -106,25 +103,21 @@ function check_room_availability($arrival, $departure, $listing_json, $room_json
     // ----------------------------
     for ($d = $start; $d < $end; $d += 86400) {
 
-        $date_dash = date("Y-m-d", $d); // listing JSON
-        $date_ymd  = date("Ymd", $d);   // room JSON
+        $date_dash = date("Y-m-d", $d);   // for listing JSON
+        $date_ymd  = date("Ymd", $d);     // for room JSON
 
         // Missing availability data
         if (!isset($avail_map[$date_dash])) {
-            $text = pll__('No availability data for');
-            return esc_html($text . ' ' . $date_dash . '.');
+            return "No availability data for {$date_dash}.";
         }
 
-        // Not available
         if ($avail_map[$date_dash] == 0) {
-            $text = pll__('Not available on');
-            return esc_html($text . ' ' . $date_dash . '.');
+            return "Not available on {$date_dash}.";
         }
     }
 
     return true;
 }
-
 
 function get_combined_room_prices() {
     $upload_dir = wp_upload_dir();
@@ -164,19 +157,7 @@ function ajax_load_flexible_dates() {
 
     // Calculate nights
     $requested_nights = (strtotime($depart) - strtotime($arrive)) / 86400;
-	$get_required_nights = function($arrive) use ($minstay_json, $requested_nights) {
 
-		$keyYMD = date("Ymd", strtotime($arrive));
-
-		if (isset($minstay_json[$keyYMD]['min_stay'])) {
-			return max(
-				intval($minstay_json[$keyYMD]['min_stay']),
-				$requested_nights
-			);
-		}
-
-		return $requested_nights;
-	};
     // Helper - check availability across full range
     $is_available = function($arrive, $depart) use ($listing_json, $minstay_json) {
 
@@ -241,49 +222,37 @@ function ajax_load_flexible_dates() {
 
     // Build alternatives: forward only until we find 6 good results
     $alternatives = [];
-	$shift = 1;
-	$minstay_applied = false;
-	while (count($alternatives) < 6 && $shift <= 120) {
-		// Shift arrival forward
-		$new_arrive = date("Y-m-d", strtotime("$arrive +$shift day"));
+    $shift = 1;
+    while (count($alternatives) < 6 && $shift <= 120) {
 
-		// 🔑 POINT 3: Adjust nights based on minStay
-		$keyYMD = date("Ymd", strtotime($new_arrive));
-		$required_nights = $requested_nights;
+        $new_arrive = date("Y-m-d", strtotime("$arrive +$shift day"));
+        $new_depart = date("Y-m-d", strtotime("$depart +$shift day"));
 
-		if (isset($minstay_json[$keyYMD]['min_stay'])) {
-			$required_nights = max(
-				intval($minstay_json[$keyYMD]['min_stay']),
-				$requested_nights
-			);
-		}
-		
-		if ($required_nights > $requested_nights) {
-			$minstay_applied = true;
-		}
+        // Check nights match
+        $nights_calc = (strtotime($new_depart) - strtotime($new_arrive)) / 86400;
+        if ($nights_calc != $requested_nights) {
+            $shift++;
+            continue;
+        }
 
-		// Recalculate departure using required nights
-		$new_depart = date("Y-m-d", strtotime("$new_arrive +$required_nights day"));
+        // Check availability rules
+        if (!$is_available($new_arrive, $new_depart)) {
+            $shift++;
+            continue;
+        }
 
-		// Check availability rules
-		if (!$is_available($new_arrive, $new_depart)) {
-			$shift++;
-			continue;
-		}
+        // Price calc
+        $total_price = $get_price_for_range($new_arrive, $new_depart, $combined_prices);
 
-		// Price calc
-		$total_price = $get_price_for_range($new_arrive, $new_depart, $combined_prices);
+        $alternatives[] = [
+            "arrive" => $new_arrive,
+            "depart" => $new_depart,
+            "nights" => $requested_nights,
+            "price"  => $total_price,
+        ];
 
-		$alternatives[] = [
-			"arrive" => $new_arrive,
-			"depart" => $new_depart,
-			"nights" => $required_nights,
-			"price"  => $total_price,
-		];
-
-		$shift++;
-	}
-
+        $shift++;
+    }
 
     if (empty($alternatives)) {
         wp_send_json_success(['html' => '']);
@@ -294,12 +263,7 @@ function ajax_load_flexible_dates() {
     
     // First alternative date (earliest available)
     $first_alt_date = $alternatives[0]['arrive'];
-    $nice_date = wp_date(
-        'F j',
-        strtotime($first_alt_date),
-        new DateTimeZone(wp_timezone_string())
-    );
-
+    $nice_date = date("F j", strtotime($first_alt_date));
     ?>
     <div class="alt-dates-wrapper" style="padding:0px 10px;margin:25px auto;max-width:100%;">
     
@@ -313,34 +277,7 @@ function ajax_load_flexible_dates() {
     
                 <div>
                     <div style="font-size:18px;font-weight:700;color:#b07a34;margin-bottom:5px;">
-                        <?php
-							if ($minstay_applied && !empty($alternatives)) {
-
-								$first = $alternatives[0];
-
-								$start = wp_date(
-									'F j',
-									strtotime($first['arrive']),
-									new DateTimeZone(wp_timezone_string())
-								);
-
-								$end = wp_date(
-									'F j',
-									strtotime($first['depart']),
-									new DateTimeZone(wp_timezone_string())
-								);
-
-								echo esc_html(
-									pll_e('Partial availability found') . " {$start}–{$end} ({$first['nights']} " . pll__('nights') . ')'
-								);
-
-							} else {
-
-								echo esc_html(
-									pll_e('Sorry. No availability until') . ' ' . $nice_date . '.'
-								);
-							}
-							?>
+                        <?php echo sprintf(pll__('Sorry. No availability until %s.'), $nice_date); ?>
                     </div>
                     <div style="font-size:14px;color:#555;">
                         <?php echo pll__('If you want more information, contact us through'); ?>
@@ -369,8 +306,8 @@ function ajax_load_flexible_dates() {
         ">
             <?php foreach ($alternatives as $opt): ?>
                 <?php
-                $a = date_i18n('M j', strtotime($opt['arrive']));
-                $d = date_i18n('M j', strtotime($opt['depart']));
+                $a = date('M j', strtotime($opt['arrive']));
+                $d = date('M j', strtotime($opt['depart']));
 
                 $page_url = sanitize_text_field($_POST['page_url'] ?? home_url());
                 $url = add_query_arg([
@@ -390,9 +327,9 @@ function ajax_load_flexible_dates() {
                     background:#fafafa;
                 ">
                     <div style="font-weight:600;font-size:12px;"><?php echo "$a – $d"; ?></div>
-                    <div style="color:#666;margin:3px 0;"><?php echo $opt['nights'] . ' ' . pll__('Nights'); ?></div>
+                    <div style="color:#666;margin:3px 0;"><?php echo $opt['nights'] . ' ' . pll__('nights'); ?></div>
                     <div style="font-size:12px;font-weight:700;color:#2b2622;">
-                        <?php //echo pll__('From  €'); ?><?php //echo number_format($opt['price'], 2); ?>
+                        <?php echo pll__('From'); ?> €<?php echo number_format($opt['price'], 2); ?>
                     </div>
 
                     <a href="<?php echo esc_url($url); ?>">
@@ -485,7 +422,6 @@ function t_($string) {
         "10% discount on Estanques merchandise" => "10% Rabatt auf Estanques-Artikel",
         "Free parking in establishments where available" => "Kostenloses Parken, wo verfügbar",
         "And many more benefits!" => "Und viele weitere Vorteile!",
-		
 
         // FOOTER
         "Apartments Ponds" => "Apartments Ponds",
@@ -507,9 +443,6 @@ add_action('init', function() {
         'Personal details',
         'Confirmation',
         'Check-in → Check-out',
-        'Booking summary',
-        'Your booking will be processed in the hotels currency. Currency conversion rates may vary. Prepayment now is partial. Local taxes will be paid in the property.',
-        'Price summary',
         'Nights',
         'Guest',
         'Guests',
@@ -522,40 +455,17 @@ add_action('init', function() {
         '10% extra discount on all your bookings',
         'Access to exclusive services in all our hotels',
         'Welcome gift upon arrival',
-        'Free complete beach kit',
-		'Flexible check-in',
-		'Daily complimentary items included',
-		'More benefits 1',
-		'More benefits 2',
-		'Preferred plant choice',
+        'Free in-room safe',
         '10% discount on Estanques merchandise',
         'Free parking in establishments where available',
         'And many more benefits!',
-        'Sorry. No availability until',
-        'If you want more information, contact us through',
-        'Flexible with your dates?',
-        'From',
-        'Check availability',
-		'less details',
-        'Please select arrival and departure dates.',
-        'Minimum stay is',
-        'nights',
-        'No availability data for',
-        'Not available on',
-        'View details',
-		'Hide details',
-		'Includes progressive discounts for longer stays',
-		'Lowest price available',
-        'Per stay',
-        'Save',
-        'booking direct',
+
         // FOOTER
         'Apartments Ponds',
         'Legal Notice',
         'Cookies Policy',
         'Privacy Policy',
-		'Processing payment',
-		'Tourist tax',
+
         // Confirmation page
         'Thank you for your booking!',
         'Your reservation has been successfully confirmed.',
@@ -565,87 +475,10 @@ add_action('init', function() {
         'Total nights',
         'Your rooms',
         'Adults',
-		'Who',
-		'From 15 years',
-		'Up to 14 years',
-		'Apply',
         'Children',
-		'Please select your dates to see availability and prices.',
         'Payment summary',
-        'Payment terms',
         'Total paid',
-        'Return to homepage',
-        'Prepayment required: 100%: Online secure payment', 
-        'Cancellation policy',
-        'The refund of this amount in case of justified cancellation.
-                The refund of the prepaid amount is not allowed if the reason for cancellation is not included in the general 
-                conditions of the policy (26 cases contemplated). In case of no show, the refund of the prepaid amount is not allowed.',
-        'Other terms',     
-        'The hotel will adapt to comply with current protocols and safety measures dictated by the authorities at all times.
-                Non refundable reservations are associated with cancellation insurance when formalizing the reservation. Check all conditions here.
-                You can find all the information about our cancellation insurance in FAQs.',   
-        'Payment method',  
-		'Partial availability found',
-		'Sorry. No availability until',
-        'Booking IDs',    
-        'Name',
-        'Email',
-        'Mobile',
-        'Your rooms',
-        'Guest comments',
-        'Booked on',
-        'Rate type',
-        'Your payment was processed securely. A confirmation email has been sent.',
-        'Payment will be charged later according to the flexible rate policy.',
-        'Booking session expired.',
-        'Choose stay',
-        'Personal details',
-        'Confirmation',
-        'Payment Failed',
-        'Unfortunately your payment could not be completed.',
-        'This may happen due to insufficient balance, incorrect card details, or a network issue.',
-        'Please try again or choose a different payment method.',
-        'Try Again',
-        'Return Home',
-        'Legal Notice',
-        'Cookies Policy',
-        'Privacy Policy',
-		'Maximum occupancy for this apartment is %d guests',
-		'First name (required)',
-        'Last name (required)',
-        'Email (required)',
-        'Phone (required)',
-		'Card number',
-		'CVC',
-		'MM/YY',
-		'Room only',
-		'Room',
-		'Total',
-		'Pending payment',
-		'Paid via Stripe',
-		'Your reservation is received but payment is pending.',
-		'Your reservation has been successfully confirmed.',
-		'Booking Confirmation',
-		'Unable to load booking details',
-		'No matching bookings found.',
-		'Booking Confirmation – Your Stay',
-		'New Booking Confirmed',
-		'Rate type',
-		'Confirm reservation',
-		'Confirm and Pay now',
-		'Price',
-		'Payment will be charged later according to the flexible rate policy.',
-		'Unable to load booking details',
-        'Cardholder name (required)',
-		'I agree and accept the payment terms, cancellation, other conditions, the',
-		'Legal Notice',
-		'Privacy & Cookies Policy',
-		'and',
-        'I would like to receive future offers and news.',
-        'I want to become a member and accept terms.',
-		'Not available',
-		'Flexible rate',
-		'Lowest price'
+        'Return to homepage'
     ];
 
     foreach ($strings as $str) {
@@ -658,14 +491,30 @@ add_action('init', function() {
         'Choose stay',
         'Personal details',
         'Confirmation',
+
+        'First name (required)',
+        'Last name (required)',
+        'Email (required)',
+        'Phone (required)',
+        'Cardholder name (required)',
         'Comments',
-		'Not sure yet', 'Morning', 'Afternoon', 'Evening',
-		'Online secure payment',
+
+        'Not sure yet', 'Morning', 'Afternoon', 'Evening',
+
+        'I agree and accept the payment terms, cancellation, other conditions and privacy policies.',
+        'I would like to receive future offers and news.',
+        'I want to become a member and accept terms.',
+
+        'Online secure payment',
         'Additional Information',
         'Booking details',
+
+        'Check-in', 'Check-out',
         'Your reservation',
         'Base price', 'Offer discount', '10% VAT',
         'Local Tax from 16 years',
+        'Total',
+
         'Pay now',
         "You'll be redirected to complete your payment.",
         'We will try to handle your requests, but we cannot always guarantee it.',
@@ -701,6 +550,29 @@ add_action('init', function() {
     pll_register_string('rooms', 'Eco-friendly');
     pll_register_string('rooms', 'Free safe');
     pll_register_string('rooms', 'Mattress');
+});
+add_action('init', function() {
+
+    $strings = [
+        'Choose stay',
+        'Personal details',
+        'Confirmation',
+
+        'Payment Failed',
+        'Unfortunately your payment could not be completed.',
+        'This may happen due to insufficient balance, incorrect card details, or a network issue.',
+        'Please try again or choose a different payment method.',
+        'Try Again',
+        'Return Home',
+
+        'Legal Notice',
+        'Cookies Policy',
+        'Privacy Policy'
+    ];
+
+    foreach ($strings as $s) {
+        pll_register_string('booking_failed', $s);
+    }
 });
 
 add_action('init', 'apartamentos_blog_post_type');
@@ -1160,7 +1032,7 @@ function apartamentos_add_enhanced_cta($content) {
 add_shortcode('apartamentos_blog_grid', 'apartamentos_blog_grid_shortcode');
 function apartamentos_blog_grid_shortcode($atts) {
     $atts = shortcode_atts(array(
-        'posts' => 100,
+        'posts' => 6,
         'category' => '',
         'language' => '',
         'columns' => 3,
@@ -1204,8 +1076,8 @@ function apartamentos_blog_grid_shortcode($atts) {
     ob_start();
     
     if ($query->have_posts()) {
-        echo '<div class="blog-grid apartamentos-blog-grid">';
-
+        echo '<div class="blog-grid" style="grid-template-columns: repeat(auto-fit, minmax(' . (380 / intval($atts['columns'])) . 'px, 1fr));">';
+        
         while ($query->have_posts()) {
             $query->the_post();
             
@@ -1240,17 +1112,9 @@ function apartamentos_blog_grid_shortcode($atts) {
             echo '<h3><a href="' . get_permalink() . '">' . get_the_title() . '</a></h3>';
             
             if ($atts['show_excerpt'] === 'true') {
-    $raw = get_the_excerpt();
-    if (!$raw) {
-        $raw = get_the_content();
-    }
-
-    $clean = wp_strip_all_tags($raw); // 🔥 elimina HTML
-    $clean = wp_trim_words($clean, 22, '…');
-
-    echo '<p class="excerpt">' . esc_html($clean) . '</p>';
-}
-
+                $excerpt = get_the_excerpt() ? get_the_excerpt() : wp_trim_words(get_the_content(), 20, '...');
+                echo '<p class="excerpt">' . esc_html($excerpt) . '</p>';
+            }
             
             // Meta información
             echo '<div class="meta">';
@@ -1280,29 +1144,9 @@ function apartamentos_blog_grid_shortcode($atts) {
         echo '</p>';
         echo '</div>';
     }
-    ?>
-    <style>
-        .apartamentos-blog-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 24px;
-            padding: 0 24px; 
-        }
-        /* Tablet */
-        @media (max-width: 1024px) {
-            .apartamentos-blog-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        /* Mobile */
-        @media (max-width: 767px) {
-            .apartamentos-blog-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-    <?php 
+    
     wp_reset_postdata();
+    
     return ob_get_clean();
 }
 
@@ -2131,14 +1975,26 @@ function custom_get_booking_dates() {
 
     // 1) GET overrides everything
     if (!empty($_GET['arrive']) && !empty($_GET['depart'])) {
+        $_SESSION['arrive'] = $_GET['arrive'];
+        $_SESSION['depart'] = $_GET['depart'];
+
         return [
-            'arrive' => $_GET['arrive'],
-            'depart' => $_GET['depart']
+            'arrive' => $_SESSION['arrive'],
+            'depart' => $_SESSION['depart']
         ];
-    }else{
-		$today      = '';
-    	$threeDays  = '';
-	}
+    }
+
+    // 2) If session already has dates → use them
+    if (!empty($_SESSION['arrive']) && !empty($_SESSION['depart'])) {
+        return [
+            'arrive' => $_SESSION['arrive'],
+            'depart' => $_SESSION['depart']
+        ];
+    }
+
+    // 3) First time → set default: today + 3 days
+    $_SESSION['arrive'] = $today;
+    $_SESSION['depart'] = $threeDays;
 
     return [
         'arrive' => $today,
@@ -2674,7 +2530,7 @@ function getCurlResponseV1Rates($listings_id, $room_id, $from, $to){
         "incChannelBookingLimit" => 0
     );
     $json_data = json_encode($data);
-	curl_setopt_array($ch, array(
+    curl_setopt_array($ch, array(
         CURLOPT_URL            => $url,
         CURLOPT_POST           => true,
         CURLOPT_POSTFIELDS     => $json_data,
@@ -2700,7 +2556,7 @@ function getCurlResponseV1Rates($listings_id, $room_id, $from, $to){
                 $prices[] = floatval($value);
             }
         }
-        $price = isset($info->p10) ? floatval($info->p10) : null;
+        $price = isset($info->p2) ? floatval($info->p2) : null;
         $finalPrice = $price;
         if ($price !== null && isset($info->x)) {
             // x = percentage multiplier (e.g., 180 → 1.8×)
@@ -2860,10 +2716,8 @@ add_action("wp_ajax_nopriv_beds24_create_booking_and_stripe", "beds24_create_boo
 function beds24_create_booking_and_stripe(){
 
     session_start();
-	$sessionKey = 'beds24_booking_session_' . session_id();
-	$existingSession = get_transient($sessionKey);
 
-    // Sanitize inputs 
+    // Sanitize inputs
     $first   = sanitize_text_field($_POST['first_name']);
     $last    = sanitize_text_field($_POST['last_name']);
     $email   = sanitize_email($_POST['email']);
@@ -2874,95 +2728,54 @@ function beds24_create_booking_and_stripe(){
     $check_out  = sanitize_text_field($_POST['check_out']);
     $total      = floatval($_POST['total']);
     $bookingSummary = $_POST['bookingSummary'];
-	$voucher = isset($_POST['voucher']) ? sanitize_text_field($_POST['voucher']) : "";
-	$babyBedsIndex  = null;
-	$babyBedsAmount = 0;
-	if (!empty($_POST['babyBeds']) && is_array($_POST['babyBeds'])) {
-		$babyBedsIndex  = isset($_POST['babyBeds']['index'])
-			? intval($_POST['babyBeds']['index'])
-			: null;
 
-		$babyBedsAmount = isset($_POST['babyBeds']['amount'])
-			? floatval($_POST['babyBeds']['amount'])
-			: 0;
-	}
-	$rateDescriptionParts = [];
-	$rateDescriptionParts[] =
-		date('Y-m-d', strtotime($check_in)) . ' ' . number_format($total, 2);
-	if ($babyBedsAmount > 0) {
-		$rateDescriptionParts[] =
-			'Baby Beds ' .
-			number_format($babyBedsAmount, 2) .
-			' (' . number_format($babyBedsAmount, 2) . ')';
-	}
-	if (!empty($voucher)) {
-		$rateDescriptionParts[] = 'Voucher applied: ' . $voucher;
-	}
-	$rateDescription = implode(", \n", $rateDescriptionParts);
     /* ============================================
        STEP 1 → CREATE BEDS24 BOOKINGS
        (new booking format, no offerId required)
     ============================================ */
 
-    if (!empty($existingSession['bookingIds'])) {
+    $bookingPayload = [];
 
-		// ✅ REUSE existing booking
-		$bookingIds = $existingSession['bookingIds'];
+    foreach($bookingSummary as $unit){
+        $bookingPayload[] = [
+            "roomId"     => intval($unit["roomId"]),
+            "arrival"    => $check_in,
+            "departure"  => $check_out,
 
-		beds24_log('REUSING EXISTING BOOKING', [
-			'bookingIds' => $bookingIds,
-			'session'    => session_id(),
-		]);
+            // Beds24 fields for guests
+            "numAdult"   => intval($unit["adults"]),
+            "numChild"   => intval($unit["childs"]),
 
-	} else {
+            "firstName"  => $first,
+            "lastName"   => $last,
+            "email"      => $email,
+            "mobile"     => $mobile,
+            "comments"   => $comment,
 
-		// ❌ Create booking only once
-		$bookingPayload = [];
+            // Beds24 ignores price on createBooking, but send anyway
+            "price"      => floatval($unit["price"]),
+        ];
+    }
 
-		foreach ($bookingSummary as $unit) {
-			$bookingPayload[] = [
-				"roomId"    => intval($unit["roomId"]),
-				"arrival"   => $check_in,
-				"departure" => $check_out,
-				"status"    => "inquiry",
+    $bookingRes = beds24_request("bookings", $bookingPayload);
 
-				"numAdult"  => intval($unit["adults"]),
-				"numChild"  => intval($unit["childs"]),
-				"voucher"  => $voucher,
-				"rateDescription"  => $rateDescription,
-				"firstName" => $first,
-				"lastName"  => $last,
-				"email"     => $email,
-				"mobile"    => $mobile,
-				"comments"  => $comment,
-				"price"     => floatval($unit["price"]),
-			];
-		}
+    if(!$bookingRes || !is_array($bookingRes)) {
+        echo json_encode(["error" => "Beds24 returned invalid response"]);
+        exit;
+    }
 
-		$bookingRes = beds24_request("bookings", $bookingPayload);
+    // Extract booking IDs
+    $bookingIds = [];
+    foreach($bookingRes as $item){
+        if(isset($item["new"]["id"])){
+            $bookingIds[] = $item["new"]["id"];
+        }
+    }
 
-		if (!$bookingRes || !is_array($bookingRes)) {
-			echo json_encode(["error" => "Beds24 returned invalid response"]);
-			exit;
-		}
-
-		$bookingIds = [];
-		foreach ($bookingRes as $item) {
-			if (!empty($item["new"]["id"])) {
-				$bookingIds[] = $item["new"]["id"];
-			}
-		}
-
-		if (empty($bookingIds)) {
-			echo json_encode(["error" => "Beds24 booking creation failed"]);
-			exit;
-		}
-
-		beds24_log('NEW BOOKING CREATED', [
-			'bookingIds' => $bookingIds,
-			'session'    => session_id(),
-		]);
-	}
+    if(empty($bookingIds)) {
+        echo json_encode(["error" => "Beds24 booking creation failed"]);
+        exit;
+    }
 
     /* ======================================================
        STORE SESSION FOR CONFIRMATION PAGE
@@ -2981,221 +2794,121 @@ function beds24_create_booking_and_stripe(){
             "comment"=> $comment
         ]
     ];
-    set_transient($sessionKey, $sessionData, 3600);
-	beds24_log('sessionData with Booking Summary', [
-		'$bookingIds' => $bookingIds,
-		'sessionData'  => $sessionData,
-	]);
-	
-	$paymentResult = beds24_add_card_and_charge([
-		'bookingId'      => $bookingIds[0],
-		'bookingIds'      => $bookingIds,
-		'bookingSummary' => $bookingSummary,
-		'arrive'         => $check_in,
-		"first"  => $first,
-        "last"   => $last
-	]);
 
-	if (isset($paymentResult['error'])) {
-		echo json_encode($paymentResult);
-		exit;
-	}
-	echo json_encode([
-		'success'  => true,
-		'redirect' => $success_url,
-		'payment'  => $paymentResult
-	]);
-	exit;
-}
-function beds24_add_card_and_charge($args) {
+    set_transient("beds24_booking_session_" . session_id(), $sessionData, 3600);
 
-    $bookingId      = $args['bookingId'];
-	$bookingIds      = $args['bookingIds'];
-    $bookingSummary = $args['bookingSummary'];
-    $arrive         = $args['arrive'];
-	$first         = $args['first'];
-	$last         = $args['last'];
-	
 
-    /* ============================
-       DATE RULES
-    ============================ */
-    $arrivalDate  = new DateTime($arrive);
-    $today        = new DateTime('today');
-    $daysToArrive = (int)$today->diff($arrivalDate)->format('%a');
-    $arrivalMonth = (int)$arrivalDate->format('n');
+    /* ======================================================
+       STEP 2 → STRIPE SESSION BASED ON rateType
+       Logic:
+         flexible → store card only
+         nonrefundable → charge full
+    ====================================================== */
 
-    $isHighSeason      = ($arrivalMonth >= 6 && $arrivalMonth <= 9);
-    $minDaysForCharge  = $isHighSeason ? 12 : 4;
-    $chargeFlexibleNow = ($daysToArrive < $minDaysForCharge);
-	
-    /* ============================
-       SPLIT AMOUNTS
-    ============================ */
     $flexibleAmount = 0;
     $savingsAmount  = 0;
 
     foreach ($bookingSummary as $unit) {
         if ($unit['rateType'] === 'flexible') {
-            $flexibleAmount += (float)$unit['price'];
-        } else {
-            $savingsAmount += (float)$unit['price'];
-        }
-    }
-	
-	beds24_log('INIT add_card_and_charge', [
-		'bookingId'      => $bookingId,
-		'arrive'         => $arrive,
-		'daysToArrive'   => $daysToArrive,
-		'isHighSeason'   => $isHighSeason,
-		'chargeNow'      => $chargeFlexibleNow,
-		'flexibleAmount' => $flexibleAmount,
-		'savingsAmount'  => $savingsAmount,
-	]);
-
-    /* ============================
-       ADD CARD
-    ============================ */
-    $addCardPayload = [[
-        "action"     => "addPaymentMethod",
-        "bookingId" => $bookingId,
-        "card"      => [
-            "number"       => preg_replace('/\s+/', '', $_POST['card_number']),
-            "expiryMonth" => substr($_POST['card_expiry'], 0, 2),
-            "expiryYear"  => '20' . substr($_POST['card_expiry'], -2),
-            "name"        => trim(($first ?? '').' '.($last ?? '')),
-            "cvc"         => sanitize_text_field($_POST['card_cvc']),
-            "type"        => "virtual"
-        ]
-    ]];
-
-    $addCardRes = beds24_request("channels/stripe", $addCardPayload);
-	beds24_log('ADD CARD RESPONSE', [
-		'bookingId' => $bookingId,
-		//'response'  => $addCardRes
-	]);
-	// Default error
-	$errorMessage = 'Card validation failed';
-	// Extract Beds24 / Stripe error message if available
-	if (
-		is_array($addCardRes) &&
-		isset($addCardRes[0]['errors'][0]['message']) &&
-		!empty($addCardRes[0]['errors'][0]['message'])
-	) {
-		$errorMessage .= ': ' . $addCardRes[0]['errors'][0]['message'];
-	}
-	if (
-		empty($addCardRes[0]['success']) ||
-		empty($addCardRes[0]['new']['stripePaymentMethodId'])
-	) {
-		beds24_log('ADD CARD FAILED', [
-			'bookingId' => $bookingId,
-			'error'     => $errorMessage,
-			'response'  => $addCardRes,
-		]);
-
-		return [
-			'error'  => $errorMessage,
-			'beds24' => $addCardRes
-		];
-	}
-
-	// ✅ Correct PM ID extraction
-	$pmId = $addCardRes[0]['new']['stripePaymentMethodId'];
-
-    /* ============================
-       CHARGE SAVINGS (ALWAYS)
-    ============================ */
-    if ($savingsAmount > 0) {
-        $res = beds24_request("channels/stripe", [[
-            "action"                => "chargePaymentMethod",
-            "bookingId"             => $bookingId,
-            "stripePaymentMethodId" => $pmId,
-            "amount"                => round($savingsAmount, 2),
-            "currency"              => "EUR",
-			"capture"              =>  true,
-            "description"           => "Savings rate (non-refundable)",
-            "source"                => "all"
-        ]]);
-		beds24_log('CHARGE saving RESPONSE', [
-			'bookingId' => $bookingId,
-			'response'  => $res,
-		]);
-
-        if (isset($res[0]['errors'])) {
-            return ['error' => 'Savings charge failed', 'beds24' => $res];
+            $flexibleAmount += $unit['price'];
+        } 
+        else { // any non-flexible = SAVINGS
+            $savingsAmount += $unit['price'];
         }
     }
 
     /* ============================
-       CHARGE FLEXIBLE (IF REQUIRED)
+       CASE 1 → ONLY FLEXIBLE
+       Capture = false (store card)
     ============================ */
-    if ($flexibleAmount > 0 && $chargeFlexibleNow) {
+    if ($flexibleAmount > 0 && $savingsAmount == 0) {
 
-        $res = beds24_request("channels/stripe", [[
-            "action"                => "chargePaymentMethod",
-            "bookingId"             => $bookingId,
-            "stripePaymentMethodId" => $pmId,
-            "amount"                => round($flexibleAmount, 2),
-            "currency"              => "EUR",
-            "description"           => "Flexible rate (late booking)",
-            "source"                => "all"
-        ]]);
-		beds24_log('CHARGE saving RESPONSE', [
-			'bookingId' => $bookingId,
-			'response'  => $res,
-		]);
+        $stripePayload = [[
+            "action" => "createStripeSession",
+            "bookingId" => $bookingIds[0],
 
-        if (isset($res[0]['errors'])) {
-            return ['error' => 'Flexible charge failed', 'beds24' => $res];
-        }
+            "capture" => false, // store card only
+
+            "line_items" => [[
+                "price_data" => [
+                    "currency" => "eur",
+                    "product_data" => ["name" => "Flexible Rate (Card Authorization Only)"],
+                    "unit_amount" => 50 // required minimum hold
+                ],
+                "quantity" => 1
+            ]],
+
+            "success_url" => home_url("/custom-booking-confirmation/"),
+            "cancel_url"  => home_url("/booking-failed/")
+        ]];
     }
-	
-	$confirmPayload = [];
-	foreach ($bookingIds as $bid) {
-		$confirmPayload[] = [
-			'id'      => (int) $bid,
-			'status'  => 'confirmed',
-			'comment' => 'Payment successful – auto confirmed'
-		];
-	}
-	// Send confirmation to Beds24
-	$confirmRes = beds24_request('bookings', $confirmPayload);
-	// Optional logging (recommended)
-	if (function_exists('beds24_log')) {
-		beds24_log('BOOKING CONFIRM ATTEMPT', [
-			'bookingIds' => $bookingIds,
-			'payload'    => $confirmPayload,
-			'response'   => $confirmRes,
-		]);
-	}
 
-    return [
-		'success' => true,
-		'url'     => 'https://apartamentosestanques.com/confirmacion-de-reserva-personalizada/',
-		'payment' => [
-			'savingsCharged'  => round($savingsAmount, 2),
-			'flexibleCharged' => $chargeFlexibleNow ? round($flexibleAmount, 2) : 0,
-			'cardStored'      => !$chargeFlexibleNow
-		]
-	];
+    /* ============================
+       CASE 2 → ONLY SAVINGS (NON REFUNDABLE)
+       Charge full amount
+    ============================ */
+    else if ($savingsAmount > 0 && $flexibleAmount == 0) {
 
-}
-function beds24_log($title, $data = []) {
-    $logFile = WP_CONTENT_DIR . '/beds24-payments.log';
+        $stripePayload = [[
+            "action" => "createStripeSession",
+            "bookingId" => $bookingIds[0],
 
-    $entry = [
-        'time'  => date('Y-m-d H:i:s'),
-        'ip'    => $_SERVER['REMOTE_ADDR'] ?? 'CLI',
-        'title' => $title,
-        'data'  => $data,
-    ];
+            "capture" => true, // charge fully now
 
-    file_put_contents(
-        $logFile,
-        json_encode($entry, JSON_PRETTY_PRINT) . PHP_EOL . str_repeat('-', 80) . PHP_EOL,
-        FILE_APPEND
-    );
+            "line_items" => [[
+                "price_data" => [
+                    "currency" => "eur",
+                    "product_data" => ["name" => "Accommodation Booking"],
+                    "unit_amount" => intval($savingsAmount * 100)
+                ],
+                "quantity" => 1
+            ]],
+
+            "success_url" => home_url("/custom-booking-confirmation/"),
+            "cancel_url"  => home_url("/booking-failed/")
+        ]];
+    }
+
+    /* ============================
+       CASE 3 → MIXED 
+       Charge savings, store card for flexible
+    ============================ */
+    else {
+
+        $stripePayload = [[
+            "action" => "createStripeSession",
+            "bookingId" => $bookingIds[0],
+
+            "capture" => true,
+
+            "line_items" => [[
+                "price_data" => [
+                    "currency" => "eur",
+                    "product_data" => ["name" => "Savings Rate Portion"],
+                    "unit_amount" => intval($savingsAmount * 100)
+                ],
+                "quantity" => 1
+            ]],
+
+            "success_url" => home_url("/custom-booking-confirmation/?storeCardForFlexible=1"),
+            "cancel_url"  => home_url("/booking-failed/")
+        ]];
+    }
+
+    /* ============================
+       CREATE STRIPE SESSION
+    ============================ */
+
+    $stripeRes = beds24_request("channels/stripe", $stripePayload);
+    $checkoutUrl = $stripeRes[0]['new']['stripeSession']['url'] ?? null;
+
+    if(!$checkoutUrl) {
+        echo json_encode(["error" => "Stripe checkout creation failed"]);
+        exit;
+    }
+
+    echo json_encode(["url" => $checkoutUrl]);
+    exit;
 }
 function generate_beds24_availability_json_single($listing_id = 0) {
 
@@ -3214,7 +2927,7 @@ function generate_beds24_availability_json_single($listing_id = 0) {
 
     // Date range: Today → +180 days
     $startDate = date('Y-m-d');
-    $endDate   = date('Y-m-d', strtotime('+365 days'));
+    $endDate   = date('Y-m-d', strtotime('+180 days'));
 
     // Beds24 API URL
     $url = "https://beds24.com/api/v2/inventory/rooms/availability/?startDate={$startDate}&endDate={$endDate}&propertyId={$listing_id}";
@@ -3253,423 +2966,113 @@ function generate_beds24_availability_json_single($listing_id = 0) {
     echo "Rooms found: " . count($result['rooms']);
 }
 function render_room_calendar($roomId, $listing_id, $currentMonth) {
-
+    // Load JSON file
     $upload_dir = wp_upload_dir();
     $json_file  = $upload_dir['basedir'] . '/beds24-availability/' . $listing_id . '.json';
     if (!file_exists($json_file)) return '';
 
     $json = json_decode(file_get_contents($json_file), true);
     if (empty($json['rooms'][$roomId])) return '';
-
+    
     $price_file = $upload_dir['basedir'] . "/beds24-availability/room-" . $roomId . ".json";
-    $roomPrices = file_exists($price_file)
-        ? json_decode(file_get_contents($price_file), true)
-        : [];
-
-    // availability map
-    $map = [];
-    foreach ($json['rooms'][$roomId] as $row) {
-        $map[$row['date']] = (int)$row['available'];
+    $roomPrices = [];
+    
+    if (file_exists($price_file)) {
+        $roomPrices = json_decode(file_get_contents($price_file), true);
     }
 
-    // Start month
+    $rows = $json['rooms'][$roomId];
+
+    // Convert to date → available map
+    $map = [];
+    foreach ($rows as $row) {
+        $map[$row['date']] = intval($row['available']);
+    }
+
+    // Determine which months to show
     $startMonth = new DateTime($currentMonth . '-01');
+    $secondMonth = (clone $startMonth)->modify('+1 month');
 
-    $html  = '<div class="room-calendar" data-current-index="0">';
+    $months = [$startMonth, $secondMonth];
+
+    // Build calendar HTML
+    $html  = '<div class="room-calendar">';
     $html .= '<div class="cal-header">';
-    $html .= '<span class="cal-nav cal-prev">❮</span>';
-    $html .= '<span class="cal-title"></span>';
-    $html .= '<span class="cal-nav cal-next">❯</span>';
-    $html .= '</div>';
-    
 
-    $html .= '<div class="cal-wrapper">';
+    // Left arrow
+    $prev = (clone $startMonth)->modify('-1 month')->format('Y-m');
+    $html .= '<a class="cal-nav cal-prev" href="' . add_query_arg('cal_month', $prev) . '">❮</a>';
 
-    // Render 12 months
-    for ($i = 0; $i < 12; $i++) {
-        $monthObj = (clone $startMonth)->modify("+$i month");
-        $html .= generate_single_month_calendar($monthObj, $map, $roomPrices, $i);
+    // Title
+    $html .= '<span class="cal-title">'
+          . $startMonth->format('F Y') . ' &nbsp;&nbsp; ' 
+          . $secondMonth->format('F Y')
+          . '</span>';
+
+    // Right arrow
+    $next = (clone $startMonth)->modify('+1 month')->format('Y-m');
+    $html .= '<a class="cal-nav cal-next" href="' . add_query_arg('cal_month', $next) . '">❯</a>';
+
+    $html .= '</div><div class="cal-wrapper">';
+
+    // Generate each month calendar
+    foreach ($months as $monthObj) {
+        //$html .= generate_single_month_calendar($monthObj, $map);
+        $html .= generate_single_month_calendar($monthObj, $map, $roomPrices);
     }
 
     $html .= '</div></div>';
 
-    // JS controller
-    $html .= render_calendar_js();
-
     return $html;
 }
-function generate_single_month_calendar($monthObj, $map, $roomPrices, $index) {
 
+function generate_single_month_calendar($monthObj, $map, $roomPrices) {
     $year  = $monthObj->format('Y');
     $month = $monthObj->format('m');
 
-    $firstDay    = new DateTime("$year-$month-01");
+    $firstDay = new DateTime("$year-$month-01");
     $daysInMonth = (int)$firstDay->format('t');
 
-    $html  = '<div class="cal-month" data-month-index="' . esc_attr($index) . '" style="display:none">';
-    $html .= '<div class="cal-month-title">' . wp_date('F Y', $firstDay->getTimestamp()) . '</div>';
+    $html = '<div class="cal-month">';
+    $html .= '<div class="cal-month-title">' . $firstDay->format('F Y') . '</div>';
     $html .= '<div class="cal-grid">';
+    $html .= '<div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>';
 
-    $weekdays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-    foreach ($weekdays as $d) {
-        $html .= '<div class="cal-weekday">' . esc_html($d) . '</div>';
-    }
-
+    // Pad empty cells before month starts (Monday = 1)
     $weekDay = (int)$firstDay->format('N');
     for ($i = 1; $i < $weekDay; $i++) {
         $html .= '<div class="cal-empty"></div>';
     }
 
     for ($d = 1; $d <= $daysInMonth; $d++) {
+        $priceKey = $year . $month . str_pad($d, 2, "0", STR_PAD_LEFT);
+        $price = isset($roomPrices[$priceKey]['lowest_price'])
+                ? round($roomPrices[$priceKey]['lowest_price'])
+                : null;
         $date = "$year-$month-" . str_pad($d, 2, "0", STR_PAD_LEFT);
-        $avail = $map[$date] ?? 0;
-        $class = $avail ? 'cal-green' : 'cal-red';
 
-        $html .= "<div class='cal-day $class'><div class='cal-day-num'>$d</div></div>";
+        $isToday = ($date == date("Y-m-d"));
+        $avail   = isset($map[$date]) ? $map[$date] : 0;
+
+        if ($isToday) {
+            $class = "cal-today";
+        } else {
+            $class = $avail == 1 ? "cal-green" : "cal-red";
+        }
+
+        //$html .= "<div class='cal-day $class'>$d</div>";
+        $html .= "<div class='cal-day $class'>";
+        $html .= "<div class='cal-day-num'>$d</div>";
+        
+        if ($price) {
+            //$html .= "<div class='cal-day-price'>€{$price}</div>";
+        }
+        
+        $html .= "</div>";
     }
 
     $html .= '</div></div>';
     return $html;
 }
-function render_calendar_js() {
-    return <<<JS
-<script>
-(function () {
 
-  document.querySelectorAll('.room-calendar').forEach(calendar => {
-
-    const months = calendar.querySelectorAll('.cal-month');
-    const title  = calendar.querySelector('.cal-title');
-    const prev   = calendar.querySelector('.cal-prev');
-    const next   = calendar.querySelector('.cal-next');
-
-    let index = 0;
-
-    function update() {
-      months.forEach(m => m.style.display = 'none');
-
-      if (months[index]) months[index].style.display = 'block';
-      if (months[index + 1]) months[index + 1].style.display = 'block';
-
-      const t1 = months[index]?.querySelector('.cal-month-title')?.textContent || '';
-      const t2 = months[index + 1]?.querySelector('.cal-month-title')?.textContent || '';
-
-      title.textContent = t2 ? `${t1} – ${t2}` : t1;
-    }
-
-    prev.addEventListener('click', function () {
-      if (index > 0) {
-        index--;
-        update();
-      }
-    });
-
-    next.addEventListener('click', function () {
-      if (index < months.length - 2) {
-        index++;
-        update();
-      }
-    });
-
-    update();
-  });
-
-})();
-</script>
-JS;
-}
-add_filter('pll_the_language_link', function ($url) {
-    if (!empty($_SERVER['QUERY_STRING'])) {
-        $url .= (strpos($url, '?') === false ? '?' : '&') . $_SERVER['QUERY_STRING'];
-    }
-    return $url;
-});
-add_action('wp_head', function () {
-    ?>
-    <style id="booking-css-guard">
-        html { visibility: hidden; }
-    </style>
-
-    <script>
-    (function () {
-
-        function applyDelayedStyles() {
-            document.querySelectorAll('link[data-pmdelayedstyle]').forEach(function (el) {
-                el.setAttribute('rel', 'stylesheet');
-                el.setAttribute('href', el.getAttribute('data-pmdelayedstyle'));
-                el.removeAttribute('data-pmdelayedstyle');
-            });
-
-            // Reveal page after styles applied
-            var guard = document.getElementById('booking-css-guard');
-            if (guard) guard.remove();
-            document.documentElement.style.visibility = 'visible';
-        }
-
-        // Run as early as possible
-        if (document.readyState === 'loading') {
-            document.addEventListener('readystatechange', function () {
-                if (document.readyState === 'interactive') {
-                    applyDelayedStyles();
-                }
-            });
-        } else {
-            applyDelayedStyles();
-        }
-
-    })();
-    </script>
-    <?php
-}, 0);
-add_shortcode('booking_search_form', 'render_booking_search_form');
-function render_booking_search_form() {
-    // Safe date handling
-    if (function_exists('custom_get_booking_dates')) {
-        $dates = custom_get_booking_dates();
-        $arrive = $dates['arrive'] ?? '';
-        $depart = $dates['depart'] ?? '';
-    } else {
-        $arrive = '';
-        $depart = '';
-    }
-
-    $calcNights = ($arrive && $depart)
-        ? (strtotime($depart) - strtotime($arrive)) / 86400
-        : 1;
-
-    $nights = isset($_GET['nights']) ? max(1, intval($_GET['nights'])) : max(1, $calcNights);
-
-    $adults   = isset($_GET['adults']) ? intval($_GET['adults']) : 2;
-    $children = isset($_GET['children']) ? intval($_GET['children']) : 0;
-
-    $combined_prices = function_exists('get_combined_room_prices')
-        ? get_combined_room_prices()
-        : [];
-
-    ob_start();
-    ?>
-<!-- ================= SEARCH FORM ================= -->
-<link rel="stylesheet"
-          href="<?php echo get_stylesheet_directory_uri(); ?>/assets/css/booking-search.css?v=<?php
-              echo filemtime(
-                  get_stylesheet_directory() . '/assets/css/booking-search.css'
-              );
-          ?>">
-<script>
-const COMBINED_PRICES = <?php echo json_encode($combined_prices); ?>;
-</script>
-<style>
-	.day-item {
-		position: relative;
-	}
-
-	.lp-price {
-		pointer-events: none;
-		position: absolute;
-		bottom: 2px;
-		font-size: 10px;
-		color: #000;
-	}
-
-	@media (max-width: 767px) {
-		.hotel-field {
-			flex: 0 0 46% !important;
-			min-width: auto;
-		}
-		.hotel-field input, .hotel-field select {
-			padding: 0 13px 0 0px !important;
-		}
-	}
-	@media (max-width: 600px) {
-		.hotel-field:first-child {
-			flex: 0 0 46% !important;
-			min-width: 152px !important;
-		}
-		.hotel-button-wrap {
-			flex: 0 0 100% !important;
-			width: 100% !important;
-		}
-		.hotel-row {
-			flex-wrap: wrap !important;
-		}
-		input#daterange::placeholder{color: #000 !important; padding-left: 10px !important;}
-	}
-</style>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css">
-<script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
-
-<div class="search-bar-wrapper-container" id="mainSearchBar">
-
-<form method="GET" action="<?php echo esc_url( get_permalink( pll_get_post( 7778 ) ) ); ?>" class="search-bar-wrapper" id="topSearchForm">
-
-    <div class="hotel-row">
-
-        <!-- Date range -->
-        <div class="hotel-field">
-            <input type="text" id="daterange" readonly placeholder="<?php echo esc_attr(pll__('Check-in → Check-out')); ?>">
-        </div>
-
-        <!-- Nights -->
-        <div class="hotel-field nights">
-            <input type="number" id="nights" name="nights" min="1"
-                   value="<?php echo esc_attr($nights); ?>"
-                   placeholder="<?php echo esc_attr(pll__('Nights')); ?>">
-        </div>
-
-        <!-- Guests -->
-        <div class="hotel-field" style="min-width:220px;position:relative;">
-
-            <div id="guestDisplay" style="height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-radius:8px;border:1px solid #d6d6d6;background:#fff;font-weight:600;">
-                <span id="guestDisplayText">
-                    <?php echo esc_html("$adults " . pll__('Adults') . " · $children " . pll__('Children')); ?>
-                </span>
-                <button type="button" id="openGuests" style="background:none;border:0;"><?php echo pll__('Edit'); ?></button>
-            </div>
-
-            <div id="guestPanel" style="display:none;position:absolute;top:52px;left:0;width:260px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:12px;z-index:999;">
-                <div style="display:flex;justify-content:space-between;">
-                    <strong><?php echo pll__('Guests'); ?></strong>
-                </div>
-
-                <div style="display:flex;justify-content:space-between;padding:8px 0;">
-                    <span><?php echo pll__('Adults'); ?></span>
-                    <div>
-                        <button type="button" class="g-dec" data-field="adults">−</button>
-                        <span id="adultsCount"><?php echo $adults; ?></span>
-                        <button type="button" class="g-inc" data-field="adults">+</button>
-                    </div>
-                </div>
-
-                <div style="display:flex;justify-content:space-between;padding:8px 0;">
-                    <span><?php echo pll__('Children'); ?></span>
-                    <div>
-                        <button type="button" class="g-dec" data-field="children">−</button>
-                        <span id="childrenCount"><?php echo $children; ?></span>
-                        <button type="button" class="g-inc" data-field="children">+</button>
-                    </div>
-                </div>
-
-                <button type="button" id="guestApply" style="width:100%;margin-top:10px;background:#FF8A3D;color:#fff;border:0;border-radius:6px;padding:8px;">
-                    <?php echo pll__('Apply'); ?>
-                </button>
-            </div>
-
-        </div>
-
-        <!-- Search -->
-        <div class="hotel-button-wrap">
-            <button type="submit" class="hotel-search-btn"><?php echo pll__('Search'); ?></button>
-        </div>
-
-    </div>
-
-    <!-- Hidden fields -->
-    <input type="hidden" name="arrive" id="arrive" value="<?php echo esc_attr($arrive); ?>">
-    <input type="hidden" name="depart" id="depart" value="<?php echo esc_attr($depart); ?>">
-    <input type="hidden" name="adults" id="adults" value="<?php echo esc_attr($adults); ?>">
-    <input type="hidden" name="children" id="children" value="<?php echo esc_attr($children); ?>">
-    <input type="hidden" name="guests" id="guests" value="<?php echo esc_attr($adults + $children); ?>">
-
-</form>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-
-    const dr = document.getElementById('daterange');
-    const nights = document.getElementById('nights');
-
-    const picker = new Litepicker({
-        element: dr,
-        singleMode: false,
-        numberOfMonths: 2,
-        numberOfColumns: 2,
-        autoApply: true,
-        minDate: new Date(),
-        lang: "<?php echo esc_js(pll_current_language()); ?>",
-        format: 'MMM D',
-        setup: (picker) => {
-            picker.on('selected', (start, end) => {
-                if (!start || !end) return;
-                const a = start.format('YYYY-MM-DD');
-                const d = end.format('YYYY-MM-DD');
-
-                document.getElementById('arrive').value = a;
-                document.getElementById('depart').value = d;
-
-                const diff = Math.round((new Date(d) - new Date(a)) / 86400000);
-                nights.value = diff > 0 ? diff : 1;
-
-                dr.value = start.format('MMM D') + ' - ' + end.format('MMM D');
-            });
-			picker.on('render', () => {
-				setTimeout(() => {
-					document.querySelectorAll('.day-item').forEach(cell => {
-
-						const timestamp = cell.dataset.time;
-						if (!timestamp) return;
-
-						const date = new Date(parseInt(timestamp));
-						const yyyy = date.getFullYear();
-						const mm = String(date.getMonth() + 1).padStart(2, '0');
-						const dd = String(date.getDate()).padStart(2, '0');
-						const key = `${yyyy}${mm}${dd}`;
-
-						if (COMBINED_PRICES[key]) {
-
-							const price = Math.round(COMBINED_PRICES[key]);
-
-							// prevent duplicate rendering
-							if (!cell.querySelector('.lp-price')) {
-								cell.insertAdjacentHTML(
-									'beforeend',
-									`<div class="lp-price">€${price}</div>`
-								);
-							}
-						}
-					});
-				}, 10); // small delay to ensure DOM exists
-			});
-        }
-    });
-
-    // Guest logic
-    const panel = document.getElementById('guestPanel');
-    document.getElementById('guestDisplay').onclick = e => {
-        e.stopPropagation();
-        panel.style.display = 'block';
-    };
-    document.addEventListener('click', e => {
-        if (!panel.contains(e.target)) panel.style.display = 'none';
-    });
-
-    function updateGuests(){
-        const a = parseInt(adults.value);
-        const c = parseInt(children.value);
-        guests.value = a + c;
-        document.getElementById('guestDisplayText').innerText =
-            `${a} <?php echo pll__('adults'); ?> · ${c} <?php echo pll__('children'); ?>`;
-    }
-
-    document.querySelectorAll('.g-inc,.g-dec').forEach(btn=>{
-        btn.onclick = function(){
-            const field = this.dataset.field;
-            const input = document.getElementById(field);
-            let v = parseInt(input.value);
-            v += this.classList.contains('g-inc') ? 1 : -1;
-            input.value = Math.max(field === 'adults' ? 1 : 0, v);
-            document.getElementById(field+'Count').innerText = input.value;
-        };
-    });
-
-    document.getElementById('guestApply').onclick = function(){
-        updateGuests();
-        panel.style.display = 'none';
-    };
-});
-</script>
-
-<?php
-    return ob_get_clean();
-}
 ?>
