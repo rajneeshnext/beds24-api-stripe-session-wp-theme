@@ -4,19 +4,41 @@ Template Name: Custom Booking Confirmation
 */
 get_header();
 session_start();
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
 
 /* ============================================================
    LOAD ALL DATA FROM TRANSIENT
 ============================================================ */
 $data = get_transient("beds24_booking_session_" . session_id());
-//$data["bookingIds"] = array(79695723);
+/*$data = [
+    "bookingIds" => [
+        0 => 79342124
+    ],
+    "total" => 4,
+    "check_in" => "2026-01-14",
+    "check_out" => "2026-01-16",
+    "bookingSummary" => [
+        [
+            "roomId"   => 628783,
+            "offerId"  => 1,
+            "adults"   => 1,
+            "children" => 2,
+            "price"    => 4,
+            "rateType" => "flexible"
+        ]
+    ],
+    "customer" => [
+        "first"   => "RAJNEESH",
+        "last"    => "SAINI",
+        "email"   => "rajnish123saini@gmail.com",
+        "mobile"  => "8729064430",
+        "comment" => ""
+    ]
+];*/
+
 if (!$data || empty($data["bookingIds"])) {
 ?>
     <div style="text-align:center;margin-top:20px;width: 100%;">
-        <h2 style='text-align:center;color:red;'><?php pll_e('Booking session expired.'); ?></h2><br/><br/><br/>
+        <h2 style='text-align:center;color:red;'>Booking session expired.</h2><br/><br/><br/>
         <a href="<?php echo home_url(); ?>" 
            style="background:#3d3732;color:#fff;padding:12px 24px;border-radius:6px;font-size:16px;text-decoration:none;">
             <?php pll_e('Return to homepage'); ?>
@@ -33,16 +55,18 @@ $check_in        = $data["check_in"];
 $check_out       = $data["check_out"];
 $bookingSummary  = $data["bookingSummary"];
 $customer        = $data["customer"];
+
 /* ============================================================
    FETCH REAL BOOKINGS FROM BEDS24 API
 ============================================================ */
 $idsQuery = implode("&id[]=", $bookingIds);
 $response = beds24_request_get("bookings?id[]=" . $idsQuery);
 if (empty($response["data"])) {
-    echo "<h2 style='text-align:center;color:red;'>".pll_e('Unable to load booking details')."</h2>";
-	get_footer();
+    echo "<h2 style='text-align:center;color:red;'>Unable to load booking details.</h2>";
+    get_footer();
     exit;
 }
+
 $allBookings = $response["data"];
 //echo "<pre>";print_r($allBookings);exit();
 /* ============================================================
@@ -59,9 +83,7 @@ foreach ($bookingIds as $bid) {
 }
 
 if (empty($bookings)) {
-    echo "<h2 style='text-align:center;color:red;'>";
-	pll_e('No matching bookings found.');
-	echo "</h2>";
+    echo "<h2 style='text-align:center;color:red;'>No matching bookings found.</h2>";
     get_footer();
     exit;
 }
@@ -85,10 +107,10 @@ $rateTypes = array_column($bookingSummary, 'rateType');
 $isFlexible = in_array("flexible", $rateTypes);
 // everything else = prepaid
 $isPrepaid  = !$isFlexible;
-$paymentMode = $isFlexible ? pll_e("Pending payment") : pll_e("Paid via Stripe");
+$paymentMode = $isFlexible ? "Pending payment" : "Paid via Stripe";
 $confirmationText = $isFlexible
-    ? pll_e('Your reservation is received but payment is pending.')
-    : pll_e('Your reservation has been successfully confirmed.');
+    ? "Your reservation is received but payment is pending."
+    : "Your reservation has been successfully confirmed.";
 
 /* ============================================================
    BUILD FULL HTML EMAIL MATCHING CONFIRMATION PAGE
@@ -100,7 +122,7 @@ ob_start();
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title><?php pll_e("Booking Confirmation");?></title>
+<title>Booking Confirmation</title>
 </head>
 
 <body style="margin:0;padding:0;background:#f7f7f7;font-family:Arial, Helvetica, sans-serif;">
@@ -118,15 +140,15 @@ ob_start();
                     <?php pll_e("Thank you for your booking!");?>
                 </h2>
                 <p style="font-size:15px;color:#666;margin:8px 0 0;">
-                    <?php echo $confirmationText;?>
+                    <?php pll_e($confirmationText);?>
                 </p>
 
                 <p style="font-size:15px;margin-top:12px;color:#000;">
-                    <strong><?php pll_e("Booking IDs");?>:</strong> <?php echo implode(", ", $bookingIds); ?>
+                    <strong>Booking IDs:</strong> <?php echo implode(", ", $bookingIds); ?>
                 </p>
 
                 <p style="font-size:15px;margin-top:5px;color:#000;">
-                    <strong><?php pll_e("Payment method");?>:</strong> <?php echo $paymentMode; ?>
+                    <strong>Payment method:</strong> <?php echo $paymentMode; ?>
                 </p>
             </td>
         </tr>
@@ -135,43 +157,19 @@ ob_start();
 
         <tr>
             <td>
-                <h3 style="font-size:20px;font-weight:700;margin:0 0 12px;"><?php pll_e("Your stay");?></h3>
+                <h3 style="font-size:20px;font-weight:700;margin:0 0 12px;">Your stay</h3>
 
                 <table width="100%" cellpadding="5" cellspacing="0" style="font-size:15px;color:#333;">
                     <tr>
-						<td><?php pll_e('Check-in'); ?>:</td>
-						<td align="right">
-							<strong>
-								<?php
-								echo esc_html(
-									wp_date(
-										'D, M j, Y',
-										strtotime($check_in)
-									)
-								);
-								?>
-							</strong>
-						</td>
-					</tr>
-
-					<tr>
-						<td><?php pll_e('Check-out'); ?>:</td>
-						<td align="right">
-							<strong>
-								<?php
-								echo esc_html(
-									wp_date(
-										'D, M j, Y',
-										strtotime($check_out)
-									)
-								);
-								?>
-							</strong>
-						</td>
-					</tr>
-
+                        <td>Check-in:</td>
+                        <td align="right"><strong><?php echo date("D, M j, Y", strtotime($check_in)); ?></strong></td>
+                    </tr>
                     <tr>
-                        <td><?php pll_e("Total nights");?>:</td>
+                        <td>Check-out:</td>
+                        <td align="right"><strong><?php echo date("D, M j, Y", strtotime($check_out)); ?></strong></td>
+                    </tr>
+                    <tr>
+                        <td>Total nights:</td>
                         <td align="right"><strong><?php echo $nights; ?></strong></td>
                     </tr>
                 </table>
@@ -185,13 +183,13 @@ ob_start();
                 <h3 style="font-size:20px;font-weight:700;margin:0 0 12px;"><?php pll_e("Guest information");?></h3>
 
                 <p style="font-size:15px;margin:4px 0;">
-                    <strong><?php pll_e("Name");?>:</strong> <?php echo esc_html($customerName); ?>
+                    <strong>Name:</strong> <?php echo esc_html($customerName); ?>
                 </p>
                 <p style="font-size:15px;margin:4px 0;">
-                    <strong><?php pll_e("Email");?>:</strong> <?php echo esc_html($customerEmail); ?>
+                    <strong>Email:</strong> <?php echo esc_html($customerEmail); ?>
                 </p>
                 <p style="font-size:15px;margin:4px 0;">
-                    <strong><?php pll_e("Mobile");?>:</strong> <?php echo esc_html($customerPhone); ?>
+                    <strong>Mobile:</strong> <?php echo esc_html($customerPhone); ?>
                 </p>
             </td>
         </tr>
@@ -200,33 +198,33 @@ ob_start();
 
         <tr>
             <td>
-                <h3 style="font-size:20px;font-weight:700;margin:0 0 12px;"><?php pll_e("Your rooms");?></h3>
+                <h3 style="font-size:20px;font-weight:700;margin:0 0 12px;">Your rooms</h3>
 
                 <?php foreach ($bookings as $i => $b): ?>
                 <div style="padding:10px 0;border-bottom:1px solid #eee;">
                     <div style="font-size:16px;font-weight:600;margin-bottom:5px;">
-                        <?php pll_e("Unit");?><?php echo $i+1; ?> <?php pll_e("Room");?> <?php echo $b["roomId"]; ?> (Unit ID: <?php echo $b["unitId"]; ?>)
+                        Unit <?php echo $i+1; ?> Room <?php echo $b["roomId"]; ?> (Unit ID: <?php echo $b["unitId"]; ?>)
                     </div>
                     <div style="font-size:14px;color:#777;">
-                        <?php pll_e("Rate type");?>: <strong><?php echo ucfirst($bookingSummary[$index]["rateType"]); ?></strong>
+                        Rate type: <strong><?php echo ucfirst($bookingSummary[$index]["rateType"]); ?></strong>
                     </div>
                     
                     <div style="font-size:14px;color:#333;">
-                        Price: EUR<?php echo number_format($bookingSummary[$index]["price"], 2); ?>
+                        Price: €<?php echo number_format($bookingSummary[$index]["price"], 2); ?>
                     </div>
 
                     <div style="font-size:14px;color:#333;margin:5px 0;">
-                        <?php pll_e("Adults");?>: <?php echo $bookingSummary[$index]["adults"]; ?>  
-                        <?php pll_e("Children");?>: <?php echo $bookingSummary[$index]["childs"]; ?>
+                        Adults: <?php echo $bookingSummary[$index]["adults"]; ?>  
+                        Children: <?php echo $bookingSummary[$index]["childs"]; ?>
                     </div>
 
                     <div style="font-size:13px;color:#777;margin-top:4px;">
-                        <?php pll_e("Booked on");?>: <?php echo date("D, M j, Y â€” H:i", strtotime($b["bookingTime"])); ?>
+                        Booked on: <?php echo date("D, M j, Y â€” H:i", strtotime($b["bookingTime"])); ?>
                     </div>
 
                     <?php if (!empty($b["comments"])): ?>
                     <div style="font-size:14px;margin-top:8px;">
-                        <strong><?php pll_e("Guest comments");?>:</strong>
+                        <strong>Guest comments:</strong>
                         <?php echo nl2br(esc_html($b["comments"])); ?>
                     </div>
                     <?php endif; ?>
@@ -240,19 +238,19 @@ ob_start();
 
         <tr>
             <td>
-                <h3 style="font-size:20px;font-weight:700;margin:0 0 12px;"><?php pll_e("Payment summary");?></h3>
+                <h3 style="font-size:20px;font-weight:700;margin:0 0 12px;">Payment summary</h3>
 
                 <table width="100%" cellpadding="5" cellspacing="0">
                     <tr>
-                        <td style="font-size:15px;"><?php pll_e("Total paid");?>:</td>
+                        <td style="font-size:15px;">Total paid:</td>
                         <td align="right" style="font-size:18px;font-weight:700;">
-                            â‚¬<?php echo number_format($totalPaid, 2); ?>
+                            €<?php echo number_format($totalPaid, 2); ?>
                         </td>
                     </tr>
                 </table>
 
                 <p style="font-size:13px;color:#777;margin-top:10px;">
-                    <?php pll_e("Your payment was processed securely. A confirmation email has been sent.");?>
+                    Your payment was processed securely. A confirmation email has been sent.
                 </p>
             </td>
         </tr>
@@ -270,37 +268,27 @@ $emailHTML = ob_get_clean();
 /*if ($isPrepaid && empty($_SESSION[$bookingKey])) {
     wp_mail(
         $customerEmail,
-        "Booking Confirmation - Your Stay",
+        "Booking Confirmation – Your Stay",
         $emailHTML,
         ["Content-Type: text/html; charset=UTF-8"]
     );
     $_SESSION[$bookingKey] = true;
 }*/
-// Create a unique key per booking
-$bookingKey = 'email_sent_' . $data['bookingIds'][0];
-if (empty($_SESSION[$bookingKey])) {
-    $headers = [
-        'Content-Type: text/html; charset=UTF-8',
-        'From: Apartamentos Estanques <info@apartamentosestanques.com>',
-        'Reply-To: info@apartamentosestanques.com'
-    ];
-    // Send to customer
-    wp_mail(
-		$customerEmail,
-		pll__('Booking Confirmation â€“ Your Stay'),
-		$emailHTML,
-		$headers
-	);
 
-	wp_mail(
-		'info@apartamentosestanques.com',
-		pll__('New Booking Confirmed'),
-		$emailHTML,
-		$headers
-	);
+session_start();
+// Create a unique key for this booking
+$bookingKey = "email_sent_" . $data["bookingIds"][0];
+if (empty($_SESSION[$bookingKey])) {
+    wp_mail(
+        $customerEmail,
+        "Booking Confirmation – Your Stay",
+        $emailHTML,
+        ["Content-Type: text/html; charset=UTF-8"]
+    );
     // Mark email as sent
     $_SESSION[$bookingKey] = true;
 }
+
 ?>
 <style>
 .container {max-width: 100% !important; padding-left: 5px; padding-right: 5px;}
@@ -442,33 +430,14 @@ hr{margin:20px 0;}
         <h3 style="font-size:20px;font-weight:700;margin-bottom:15px;"><?php pll_e('Your stay'); ?></h3>
     
         <div style="display:flex;justify-content:space-between;">
-			<span><?php pll_e('Check-in'); ?>:</span>
-			<strong>
-				<?php
-				echo esc_html(
-					wp_date(
-						'D, M j, Y',
-						strtotime($check_in)
-					)
-				);
-				?>
-			</strong>
-		</div>
-
-		<div style="display:flex;justify-content:space-between;">
-			<span><?php pll_e('Check-out'); ?>:</span>
-			<strong>
-				<?php
-				echo esc_html(
-					wp_date(
-						'D, M j, Y',
-						strtotime($check_out)
-					)
-				);
-				?>
-			</strong>
-		</div>
-
+            <span><?php pll_e('Check-in'); ?>:</span>
+            <strong><?php echo date("D, M j, Y", strtotime($check_in)); ?></strong>
+        </div>
+    
+        <div style="display:flex;justify-content:space-between;">
+            <span><?php pll_e('Check-out'); ?>:</span>
+            <strong><?php echo date("D, M j, Y", strtotime($check_out)); ?></strong>
+        </div>
     
         <div style="display:flex;justify-content:space-between;">
             <span><?php pll_e('Total nights'); ?>:</span>
@@ -523,10 +492,10 @@ hr{margin:20px 0;}
     
         <div style="display:flex;justify-content:space-between;">
             <span><?php pll_e('Total paid'); ?>:</span>
-            <strong style="font-size:18px;">â‚¬<?php echo number_format($totalPaid, 2); ?></strong>
+            <strong style="font-size:18px;">€<?php echo number_format($totalPaid, 2); ?></strong>
             <?php if ($isFlexible): ?>
                 <p style="font-size:14px;color:#c00;margin-top:6px;">
-                    <?php pll_e('Payment will be charged later according to the flexible rate policy.'); ?>
+                    Payment will be charged later according to the flexible rate policy.
                 </p>
             <?php endif; ?>
         </div>

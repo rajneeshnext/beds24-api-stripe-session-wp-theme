@@ -3,15 +3,6 @@
 Template Name: Custom Instant Booking
 */
 get_header();
-session_start();
-$sessionKey = 'beds24_booking_session_' . session_id();
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $sessionData = get_transient($sessionKey);
-    if (is_array($sessionData) && isset($sessionData['bookingIds'])) {
-        unset($sessionData['bookingIds']);
-        set_transient($sessionKey, $sessionData, 3600);
-    }
-}
 // Required URL parameters
 $check_in        = isset($_GET['check_in']) ? $_GET['check_in'] : '';
 $check_out       = isset($_GET['check_out']) ? $_GET['check_out'] : '';
@@ -24,7 +15,7 @@ $childs_data       = isset($_GET['childs_data']) ? explode(",", $_GET['childs_da
 $subtotal        = isset($_GET['subtotal']) ? floatval($_GET['subtotal']) : 0;
 $total           = isset($_GET['total']) ? floatval($_GET['total']) : 0;
 $listing_id      = isset($_GET['listing_id']) ? $_GET['listing_id'] : '';
-$rateType		 = isset($_GET['rateType']) ? $_GET['rateType'] : '';
+
 $bookingSummary = [];
 $bookingSummary[] = [
     "roomId"   => isset($_GET['room_id']) ? $_GET['room_id'] : "",
@@ -34,21 +25,7 @@ $bookingSummary[] = [
     "adults"   => $adult_guest,
     "childs"   => $child_guest
 ];
-$arrivalDate   = new DateTime($check_in);
-$today         = new DateTime('today');
-$daysToArrive  = (int) $today->diff($arrivalDate)->days;
-$arrivalMonth  = (int) $arrivalDate->format('n');
-$isHighSeason     = ($arrivalMonth >= 6 && $arrivalMonth <= 9);
-$minDaysForCharge = $isHighSeason ? 12 : 4;
-// Only applies to FLEXIBLE rate
-$chargeFlexibleNow = false;
-if ($rateType === 'flexible') {
-    $chargeFlexibleNow = ($daysToArrive < $minDaysForCharge);
-}
-// Button label
-$payButtonText = (!$chargeFlexibleNow && $rateType === 'flexible')
-    ? pll__('Confirm reservation')
-    : pll__('Confirm and Pay now');
+
 // SET subtotal and total automatically if missing
 if ($subtotal == 0) $subtotal = $bookingSummary[0]["price"];
 if ($total == 0) $total = $bookingSummary[0]["price"];
@@ -402,16 +379,6 @@ if ($total == 0) $total = $bookingSummary[0]["price"];
     font-weight: 700;
     margin-top: 18px;
 }
-.select2-container--default .select2-selection--single {
-    border: 1px solid #aaa !important;
-    border-radius: 0 !important;
-    color: #666666 !important;
-    background-color: #fafafa !important;
-    border-color: #cccccc !important;
-    height: 44px !important;
-    padding-top: 8px !important;
-}
-.select2-container--default .select2-selection--single .select2-selection__arrow b{margin-top: 5px !important;}
 </style>
 
 <div class="booking-container">
@@ -426,8 +393,7 @@ if ($total == 0) $total = $bookingSummary[0]["price"];
             <input type="text" name="first_name" class="input-box" placeholder="<?php pll_e('First name (required)'); ?>">
             <input type="text" name="last_name" class="input-box" placeholder="<?php pll_e('Last name (required)'); ?>">
             <input type="email" name="email" class="input-box" placeholder="<?php pll_e('Email (required)'); ?>">
-			<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
-			<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
             <div class="phone-row">
                 <select name="prefix" class="input-box select-prefix">
                     <!-- Popular / Important -->
@@ -487,53 +453,20 @@ if ($total == 0) $total = $bookingSummary[0]["price"];
                     <option value="+27">+27 (South Africa)</option>
                 </select>
                 <input type="text" name="mobile" class="input-box" placeholder="<?php pll_e('Phone (required)'); ?>">
-				<script>
-					jQuery(document).ready(function($){
-						$('.select-prefix').select2({
-							width: '90px',
-							dropdownAutoWidth: true,
-							minimumResultsForSearch: 0, // ALWAYS show search
-							placeholder: '+ code'
-						});
-					});
-				</script>
             </div>
 
             <div class="checkbox-row" style="margin-bottom: 10px;">
                 <input type="checkbox" name="agree_terms">
                 <label>
-                    <?php
-						$text        = trim(pll__('I agree and accept the payment terms, cancellation, other conditions, the'));
-						$legal_label = trim(pll__('Legal Notice'));
-						$privacy_label = trim(pll__('Privacy & Cookies Policy'));
-						$and_label   = trim(pll__('and'));
-
-						$legal_url   = home_url('/aviso-legal/');
-						$privacy_url = home_url('/cookies-policy/');
-
-						/* --- TEXT PART --- */
-						if ($text !== '') {
-							echo '<span class="checkout-terms-text">' . esc_html($text) . '</span>';
-						}
-
-						/* --- LINKS PART --- */
-						$links = [];
-
-						if ($legal_label !== '' && $legal_url) {
-							$links[] = '<a href="' . esc_url($legal_url) . '" target="_blank">'
-								. esc_html($legal_label) . '</a>';
-						}
-
-						if ($privacy_label !== '' && $privacy_url) {
-							$links[] = '<a href="' . esc_url($privacy_url) . '" target="_blank">'
-								. esc_html($privacy_label) . '</a>';
-						}
-
-						if (!empty($links)) {
-							echo ' ' . implode(' ' . esc_html($and_label) . ' ', $links);
-						}
-						?>
-
+                    <?php 
+                        printf(
+                            pll__(
+                                'I agree and accept the payment terms, cancellation, other conditions, the <a href="%1$s" target="_blank">Legal Notice</a> and the <a href="%2$s" target="_blank">Privacy & Cookies Policy</a>.'
+                            ),
+                            home_url().'/aviso-legal/',
+                            home_url().'/cookies-policy/'
+                        );
+                    ?>
                 </label>
             </div>
         </div>
@@ -544,18 +477,6 @@ if ($total == 0) $total = $bookingSummary[0]["price"];
             <p style="font-size:14px;margin-bottom:12px;"><?php pll_e("You'll be redirected to complete your payment."); ?></p>
 
             <input type="text" name="card_name" class="input-box" placeholder="<?php pll_e('Cardholder name (required)'); ?>">
-			<!-- CARD NUMBER -->
-			<input type="text" name="card_number" class="input-box" 
-				   placeholder="<?php pll_e('Card number'); ?>" 
-				   maxlength="19" autocomplete="cc-number">
-
-			<!-- EXPIRY + CVC -->
-			<div style="display:flex; gap:10px;">
-				<input type="text" name="card_expiry" class="input-box" 
-					   placeholder="<?php pll_e('MM/YY'); ?>" maxlength="5" autocomplete="cc-exp">
-				<input type="text" name="card_cvc" class="input-box" 
-					   placeholder="<?php pll_e('CVC'); ?>" maxlength="4" autocomplete="cc-csc">
-			</div>
         </div>
 
         <!-- ADDITIONAL INFO -->
@@ -599,12 +520,12 @@ if ($total == 0) $total = $bookingSummary[0]["price"];
         
                 <!-- TOP ROW: IMAGE + TITLE + SUBTITLE -->
                 <div style="display:flex;gap:15px;margin-top:15px;">
-                    <img src="<?php echo site_url();?>/wp-content/uploads/2025/05/apartamentos-estanques-coloniasantjordi-mallorca-27.jpg" 
+                    <img src="https://apartamentosestanques.websitesdaddy.com/wp-content/uploads/2025/05/apartamentos-estanques-coloniasantjordi-mallorca-27.jpg" 
                          style="width:80px;height:80px;object-fit:cover;border-radius:6px;">
                     <div>
-                        <div style="font-size:16px;font-weight:700;"><?php pll_e('Room'); ?> <?php echo $room['roomId']; ?></div>
+                        <div style="font-size:16px;font-weight:700;">Room <?php echo $room['roomId']; ?></div>
                         <div style="font-size:13px;color:#888;">
-                            <?php echo $room['adults']; ?> <?php pll_e('adults'); ?> 
+                            <?php echo $room['adults']; ?> adults 
                             <?php echo ($room['childs'] > 0) ? " • {$room['childs']} children" : ""; ?>
                         </div>
                     </div>
@@ -617,18 +538,8 @@ if ($total == 0) $total = $bookingSummary[0]["price"];
                     padding:12px 0;
                     border-bottom:1px solid #eee;
                 ">
-                   <span>
-						<?php
-						echo esc_html(
-							wp_date(
-								get_option('date_format'),
-								strtotime($check_in)
-							)
-						);
-						?>
-					</span>
-
-                    <span><?php pll_e('Room only'); ?></span>
+                    <span><?php echo date("D, M j, Y", strtotime($check_in)); ?></span>
+                    <span>Room only</span>
                     <span>€<?php echo number_format($room['price'], 2); ?></span>
                 </div>
         
@@ -641,29 +552,27 @@ if ($total == 0) $total = $bookingSummary[0]["price"];
         <div class="policies" style="border:1px solid #e5e5e5; padding:20px; border-radius:4px; margin-top:25px; background:#fff;">
 
             <div class="policies-title" style="font-weight:700; font-size:15px; margin-bottom:6px;">
-                <?php pll_e('Payment terms'); ?>
+                Payment terms
             </div>
             <div style="font-size:14px; margin-bottom:18px;">
-                <?php pll_e('Prepayment required: 100%: Online secure payment'); ?>
+                Prepayment required: 100%: Online secure payment
             </div>
         
             <div class="policies-title" style="font-weight:700; font-size:15px; margin-bottom:6px;">
-                <?php pll_e('Cancellation policy'); ?>
+                Cancellation policy
             </div>
             <div style="font-size:14px; margin-bottom:18px; line-height:1.45;">
-                <?php pll_e('The refund of this amount in case of justified cancellation.
+                The refund of this amount in case of justified cancellation.
                 The refund of the prepaid amount is not allowed if the reason for cancellation is not included in the general 
-                conditions of the policy (26 cases contemplated). In case of no show, the refund of the prepaid amount is not allowed.'); ?>
+                conditions of the policy (26 cases contemplated). In case of no show, the refund of the prepaid amount is not allowed. 
             </div>
             <div class="policies-title" style="font-weight:700; font-size:15px; margin-bottom:6px;">
-                <?php pll_e('Other terms'); ?>
+                Other terms
             </div>
             <div style="font-size:14px; line-height:1.45;">
-                <p>
-                <?php pll_e('The hotel will adapt to comply with current protocols and safety measures dictated by the authorities at all times.
+                <p>The hotel will adapt to comply with current protocols and safety measures dictated by the authorities at all times.
                 Non refundable reservations are associated with cancellation insurance when formalizing the reservation. Check all conditions here.
-                You can find all the information about our cancellation insurance in FAQs.'); ?>
-                </p>
+                You can find all the information about our cancellation insurance in FAQ’s.</p>
             </div>
         </div>
     </div>
@@ -681,44 +590,21 @@ if ($total == 0) $total = $bookingSummary[0]["price"];
         
             <!-- BOOKING SUMMARY TITLE -->
             <div style="font-size:20px;font-weight:700;margin-bottom:16px;">
-                <?php pll_e('Booking summary'); ?>
+                Booking summary
             </div>
         
             <!-- CHECK-IN / CHECK-OUT -->
             <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
                 <div>
-					<div style="font-weight:700;">
-						<?php pll_e('Check-in'); ?>
-					</div>
-					<div>
-						<?php
-						echo esc_html(
-							wp_date(
-								'D, M j, Y',
-								strtotime($check_in)
-							)
-						);
-						?>
-					</div>
-				</div>
-
-				<div>
-					<div style="font-weight:700;">
-						<?php pll_e('Check-out'); ?>
-					</div>
-					<div>
-						<?php
-						echo esc_html(
-							wp_date(
-								'D, M j, Y',
-								strtotime($check_out)
-							)
-						);
-						?>
-					</div>
-					<!-- <div style="font-size:12px;color:#777;">to 12:00</div> -->
-				</div>
-
+                    <div style="font-weight:700;"><?php pll_e('Check-in'); ?></div>
+                    <div><?php echo date("D, M j, Y", strtotime($check_in)); ?></div>
+                </div>
+        
+                <div>
+                    <div style="font-weight:700;"><?php pll_e('Check-out'); ?></div>
+                    <div><?php echo date("D, M j, Y", strtotime($check_out)); ?></div>
+                    <!--<div style="font-size:12px;color:#777;">to 12:00</div>-->
+                </div>
             </div>
         
             <!-- YOUR RESERVATION -->
@@ -727,12 +613,12 @@ if ($total == 0) $total = $bookingSummary[0]["price"];
             
             <?php foreach ($bookingSummary as $i => $unit): ?>
                 <div style="font-size:14px;margin-top:8px;margin-bottom:4px;">
-                    <strong><?php pll_e('Room'); ?> <?php echo $unit['roomId']; ?></strong>
+                    <strong>Room <?php echo $unit['roomId']; ?></strong>
                 </div>
                 <div style="font-size:13px;color:#555;margin-left:10px;">
-                    <?php pll_e('Adults'); ?>: <?php echo $unit['adults']; ?>  
+                    Adults: <?php echo $unit['adults']; ?>  
                     &nbsp;·&nbsp;
-                    <?php pll_e('Children'); ?>: <?php echo $unit['childs']; ?>
+                    Children: <?php echo $unit['childs']; ?>
                 </div>
             <?php endforeach; ?>
             
@@ -740,7 +626,7 @@ if ($total == 0) $total = $bookingSummary[0]["price"];
         
             <!-- PRICE SUMMARY -->
             <div style="font-size:18px;font-weight:700;margin-bottom:14px;">
-                <?php pll_e('Price summary'); ?>
+                Price summary
             </div>
             <?php
             $start   = new DateTime($check_in);
@@ -765,8 +651,7 @@ if ($total == 0) $total = $bookingSummary[0]["price"];
             }
             
             // Add tax to total (if needed)
-            //$touristTax = 0;
-            //$total = $total + $touristTax;
+            $total = $total + $touristTax;
             ?>
 
             <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
@@ -801,7 +686,7 @@ if ($total == 0) $total = $bookingSummary[0]["price"];
                 margin-bottom:18px;
                 line-height:1.4;
             ">
-                <?php pll_e("Your booking will be processed in the hotels currency. Currency conversion rates may vary. Prepayment now is partial. Local taxes will be paid in the property."); ?>
+                <?php pll_e("Your booking will be processed in the hotel's currency. Currency conversion rates may vary. Prepayment now is partial. Local taxes will be paid in the property."); ?>
             </div>
         
             <!-- PAY NOW BUTTON -->
@@ -817,7 +702,7 @@ if ($total == 0) $total = $bookingSummary[0]["price"];
                 font-weight:600;
                 margin-bottom:14px;
             ">
-				<?php echo $payButtonText; ?> €<?php echo number_format($total,2); ?>
+                <?php pll_e('Pay now'); ?> €<?php echo number_format($total,2); ?>
             </button>
         
             <div style="font-size:12px;text-align:center;color:#777;">
@@ -826,13 +711,13 @@ if ($total == 0) $total = $bookingSummary[0]["price"];
             <div id="payment-loader" style="display:none; margin-top:15px; text-align:center;">
                 <div class="lds-dual-ring"></div>
                 <div style="margin-top:8px;font-size:15px;color:#444;">
-                    <?php pll_e('Processing payment'); ?>…
+                    Processing payment…
                 </div>
             </div>
         </div>
 </div>
 <div class="mobile-paynow-bar">
-	<?php echo $payButtonText; ?> €<?php echo number_format($total,2); ?>
+    <?php pll_e('Pay now'); ?> €<?php echo number_format($total,2); ?>
 </div>
 <div style="
     text-align:center;
@@ -845,27 +730,26 @@ if ($total == 0) $total = $bookingSummary[0]["price"];
     <!-- COPYRIGHT -->
     <div style="margin-bottom:6px;">
         &copy;
-        <span>2025 <?php pll_e('Apartments Ponds'); ?></span>
+        <span>2025 Apartments Ponds</span>
     </div>
 
     <!-- LINKS -->
-   <div style="margin-top:6px;">
-    <a href="<?php echo esc_url( pll_home_url() . 'aviso-legal/' ); ?>"
-       style="color:#666;text-decoration:none;margin-right:14px;">
-        <?php pll_e('Legal Notice'); ?>
-    </a>
+    <div style="margin-top:6px;">
+        <a href="https://apartamentosestanques.websitesdaddy.com/aviso-legal/?_gl=1*1er7ekh*_up*MQ..*_ga*MjI4NjMzNTgyLjE3NjQ5MzE5MzM.*_ga_P56KM5X69R*czE3NjQ5MzE5MzAkbzEkZzAkdDE3NjQ5MzE5MzAkajYwJGwwJGgw"
+           style="color:#666;text-decoration:none;margin-right:14px;">
+           <?php pll_e('Legal Notice'); ?>
+        </a>
 
-    <a href="<?php echo esc_url( pll_home_url() . 'politica-de-cookies/' ); ?>"
-       style="color:#666;text-decoration:none;margin-right:14px;">
-        <?php pll_e('Cookies Policy'); ?>
-    </a>
+        <a href="<?php echo home_url('/politica-de-cookies/'); ?>"
+           style="color:#666;text-decoration:none;margin-right:14px;">
+           <?php pll_e('Cookies Policy'); ?>
+        </a>
 
-    <a href="<?php echo esc_url( pll_home_url() . 'politica-de-privacidad/' ); ?>"
-       style="color:#666;text-decoration:none;">
-        <?php pll_e('Privacy Policy'); ?>
-    </a>
-</div>
-
+        <a href="<?php echo home_url('/politica-de-privacidad/'); ?>"
+           style="color:#666;text-decoration:none;">
+           <?php pll_e('Privacy Policy'); ?>
+        </a>
+    </div>
 </div>
 <script>
 jQuery(document).ready(function($){
@@ -899,26 +783,6 @@ jQuery(document).ready(function($){
         let mobile    = $("input[name='mobile']");
         let cardName  = $("input[name='card_name']");
         let agree     = $("input[name='agree_terms']");
-		let cardNumber = $("input[name='card_number']");
-		let cardExpiry = $("input[name='card_expiry']");
-		let cardCvc    = $("input[name='card_cvc']");
-		// CARD NUMBER (basic Luhn-safe length check)
-		if (!/^\d{13,19}$/.test(cardNumber.val().replace(/\s+/g,''))) {
-			showError(cardNumber, "Enter a valid card number");
-			valid = false;
-		}
-
-		// EXPIRY MM/YY
-		if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardExpiry.val())) {
-			showError(cardExpiry, "Expiry must be MM/YY");
-			valid = false;
-		}
-
-		// CVC
-		if (!/^\d{3,4}$/.test(cardCvc.val())) {
-			showError(cardCvc, "Invalid CVC");
-			valid = false;
-		}		
 
         if (firstName.val().trim() === "") {
             showError(firstName, "First name is required");
@@ -991,72 +855,40 @@ jQuery(document).ready(function($){
 
         window.paymentInProgress = true; // BLOCK
         showLoader();
-		// Card number formatting (xxxx xxxx xxxx xxxx)
-		$("input[name='card_number']").on("input", function () {
-			let v = $(this).val().replace(/\D/g, "").substring(0,19);
-			$(this).val(v.replace(/(.{4})/g, "$1 ").trim());
-		});
-
-		// Expiry auto slash
-		$("input[name='card_expiry']").on("input", function () {
-			let v = $(this).val().replace(/\D/g, "").substring(0,4);
-			if (v.length >= 3) v = v.substring(0,2) + "/" + v.substring(2);
-			$(this).val(v);
-		});
 
         let payload = {
-			action: "beds24_create_booking_and_stripe",
-
-			first_name: $("input[name='first_name']").val(),
-			last_name: $("input[name='last_name']").val(),
-			email: $("input[name='email']").val(),
-			mobile: $("input[name='mobile']").val(),
-			comment: $("textarea[name='comments']").val(),
-
-			// CARD DATA
-			card_name: $("input[name='card_name']").val(),
-			card_number: $("input[name='card_number']").val(),
-			card_expiry: $("input[name='card_expiry']").val(),
-			card_cvc: $("input[name='card_cvc']").val(),
-
-			check_in: "<?php echo $check_in; ?>",
-			check_out: "<?php echo $check_out; ?>",
-			bookingSummary: <?php echo json_encode($bookingSummary); ?>,
-			total: "<?php echo $total; ?>"
-		};
-
+            action: "beds24_create_booking_and_stripe",
+            first_name: $("input[name='first_name']").val(),
+            last_name: $("input[name='last_name']").val(),
+            email: $("input[name='email']").val(),
+            mobile: $("input[name='mobile']").val(),
+            comment: $("textarea[name='comments']").val(),
+            check_in: "<?php echo $check_in; ?>",
+            check_out: "<?php echo $check_out; ?>",
+            bookingSummary: <?php echo json_encode($bookingSummary); ?>,
+            total: "<?php echo $total; ?>"
+        };
 
         $.post("<?php echo admin_url('admin-ajax.php'); ?>", payload)
             .done(function(res){
-				try {
-					let json = JSON.parse(res);
-					if (json.error) {
-						hideLoader();
-						window.paymentInProgress = false;
-						alert("Error: " + json.error);
-						return;
-					}
-					if (json.payment && json.payment.error) {
-						hideLoader();
-						window.paymentInProgress = false;
-						alert("Error: " + json.payment.error);
-						return;
-					}
-					let redirectUrl =
-						json.url ||
-						json.redirect ||
-						(json.payment && json.payment.url);
+                try {
+                    let json = JSON.parse(res);
 
-					if (redirectUrl) {
-						window.location.href = redirectUrl;
-						return;
-					}
+                    if (json.error) {
+                        hideLoader();
+                        window.paymentInProgress = false;
+                        alert("Error: " + json.error);
+                        return;
+                    }
 
-					hideLoader();
-					window.paymentInProgress = false;
-					alert("Unexpected server response.");
-
-				}
+                    if (json.url) {
+                        window.location.href = json.url;
+                    } else {
+                        hideLoader();
+                        window.paymentInProgress = false;
+                        alert("Unexpected server response.");
+                    }
+                }
                 catch (e) {
                     hideLoader();
                     window.paymentInProgress = false;
