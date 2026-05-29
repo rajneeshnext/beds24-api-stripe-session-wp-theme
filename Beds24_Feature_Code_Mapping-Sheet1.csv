@@ -1,0 +1,201 @@
+code,name
+LIVING_ROOM,Living Room
+FIREPLACE,Fireplace
+WOOD_STOVE,Wood Stove
+HEATING,Heating
+AIR_CONDITIONING,Air Conditioning
+CEILING_FAN,Ceiling Fan
+ELEVATOR,Elevator
+DOORBELL,Doorbell
+TELEPHONE,Telephone
+BATHROBE,Bathrobe
+HAIR_DRYER,Hairdryer
+SLIPPERS,Slippers
+HANGERS,Clothes hangers
+IRON_BOARD,Ironing Board
+LINENS,Linens
+SHAMPOO,Shampoo
+TOILETRIES,Toiletries
+TOWELS,Towels
+DRYER,Tumble Dryer
+WASHER,Washing Machine
+BALCONY,Balcony
+DECK_PATIO_UNCOVERED,Terrace
+LANAI_GAZEBO_COVERED,Gazebo
+GARDEN,Garden
+GRILL,Grill
+GAME_ROOM,Game Room
+SITTING_AREA,Sitting Area
+VERANDA,Veranda
+ROOF_TERRACE,Roof terrace
+PRIVATE_YARD,Private yard
+GARAGE,Garage
+PARKING_INCLUDED,Parking Included
+PARKING_POSSIBLE,Parking Possible
+PARKING_PAID,Paid Parking
+PRIVATE_ENTRANCE,Private Entrance
+SAFE,Safe
+LOCKERS,Lockers
+FIRE_EXTINGUISHER,Fire Extinguisher
+FIRST_AID_KIT,First Aid Kit
+SMOKE_DETECTOR,Smoke Detector
+CO_DETECTOR,Co Detector
+SAFETY_CARD,Safety Card
+LOCK_BEDROOM,Lock On Bedroom
+BUSINESS_CENTER,Business Center
+DESK,Desk
+LAPTOP_FRIENDLY,Laptop Friendly
+BOOKS,Books
+DVD,DVD
+FOOSBALL,Foosball
+GAMES,Games
+MUSIC_LIBRARY,Music Library
+TABLE_TENNIS,Table Tennis
+POOL_TABLE,Pool Table
+CABLE,Cable
+SATELLITE,Satellite
+STEREO,Stereo
+TV,TV
+TOYS,Toys
+VIDEO_GAMES,Video Games
+VIDEO_LIBRARY,Video Library
+VIDEO_ON_DEMAND,Video on Demand
+BREAKFAST_NONE,Breakfast None
+BREAKFAST_POSSIBLE,Breakfast Possible
+BREAKFAST_INCLUDED,Breakfast Included
+BREAKFAST_IN_ROOM,Breakfast In Room
+DINNER_NONE,Dinner None
+DINNER_POSSIBLE,Dinner Possible
+DINNER_INCLUDED,Dinner Included
+LUNCH_NONE,Lunch None
+LUNCH_POSSIBLE,Lunch Possible
+LUNCH_INCLUDED,Lunch Included
+MEALS_NONE,Meals None
+MEALS_POSSIBLE,Meals Possible
+MINIBAR,Minibar
+CAFE,Cafe
+RESTAURANT,Restaurant
+ROOM_SERVICE,Room Service
+PRIVATE_CHEF,Private Chef
+INTERNET,Internet
+WIFI,Wifi
+KITCHEN,Kitchen
+DINING_AREA,Dining Area
+DINING_ROOM,Dining Room
+COFFEE_MAKER,Coffee Maker
+DISHES_UTENSILS,"Dishes, Utensils"
+DISHWASHER,Dishwasher
+FREEZER,Freezer
+HIGHCHAIR,Highchair
+KETTLE,Kettle
+MICROWAVE,Microwave
+OVEN,Oven
+RACLETTE,Raclette
+REFRIGERATOR,Refrigerator
+SHARED_KITCHEN,Shared Kitchen
+SPICES,Spices
+STOVE,Stove
+TOASTER,Toaster
+BEACH,Beach
+BEACH_FRONT,Beach Front
+BEACH_VIEW,Beach View
+CITY,City
+DOWNTOWN,Downtown
+GOLF_COURSE_FRONT,Golf Course Front
+GOLF_COURSE_VIEW,Golf Course View
+LAKE,Lake
+LAKE_FRONT,Lake Front
+LAKE_VIEW,Lake View
+MONUMENT_VIEW,Monument View
+MOUNTAIN,Mountain
+MOUNTAIN_VIEW,Mountain View
+NEAR_OCEAN,Near Ocean
+OCEAN_FRONT,Ocean Front
+OCEAN_VIEW,Ocean View
+RESORT,Resort
+RIVER,River
+RURAL,Rural
+SKI_IN,Ski In
+SKI_OUT,Ski Out
+TOWN,Town
+VILLAGE,Village
+WATER_VIEW,Water View
+WATERFRONT,Water Front
+PETS_CONSIDERED,Pets Considered
+PETS_NOT_ALLOWED,Pets Not Allowed
+HOT_TUB,Hot Tub
+MASSAGE,Massage
+POOL,Pool
+POOL_HEATED,Heated Pool
+POOL_INDOOR,Indoor Pool
+POOL_PRIVATE,Private Pool
+POOL_CHILDREN,Children's pool
+SAUNA,Sauna
+AIRPORT_SHUTTLE,Airport Shuttle
+BAGGAGE_STORAGE,Baggage Storage
+BAR,Bar
+CAR_AVAILABLE,Car Available
+CHAUFFEUR,Chauffeur
+CLEANING_INCLUDED,Cleaning Included
+CLEANING_POSSIBLE,Cleaning Possible
+CONCIERGE,Concierge
+DOORMAN,Doorman
+RECEPTION,Reception
+RECEPTION_24_HOUR,Reception 24 Hours
+STAFF,Staff
+SHOP,Shop
+BASKETBALL_COURT,Basketball Court
+BICYCLE,Bicycle
+BOAT,Boat
+CYCLING,Cycling
+CROSS_COUNTRY_SKIING,Cross Country Skiing
+EQUESTRIAN_EVENTS,Equestarian Events
+FISHING,Fishing
+FITNESS_ROOM,Fitness Room
+GOLF,Golf
+GYM,Gym
+HIKING,Hiking
+HORSE_RIDING,Horse Riding
+HUNTING,Hunting
+ICE_SKATING,Ice Skating
+JET_SKIING,Jet Skiing
+KAYAK_CANOE,Kayak Kanu
+KAYAKING,Kayaking
+MOUNTAIN_BIKING,Mountain Biking
+MOUNTAIN_CLIMBING,Mountain Climbing
+MOUNTAINEERING,Mountaineering
+PARAGLIDING,Paragliding
+PARASAILING,Parasailing
+RAFTING,Rafting
+ROLLER_BLADING,Roller Blading
+SAILING,Sailing
+SCUBA_OR_SNORKELING,Scuba or Snorkling
+SKIING,Ski
+SKIING_WATER,Skiing Water
+SNOW_SPORTS_GEAR,Snow Sports Gear
+SNOWBOARDING,Snowboarding
+SURFING,Surfing
+SWIMMING,Swimming
+TENNIS,Tennis
+TRAMPOLINE,Trampoline
+TUBING_WATER,Tubing Water
+WATER_SPORTS,Watersports
+WATER_SPORTS_GEAR,Water Sports Gear
+WHITEWATER_RAFTING,Whitewater Rafting
+WIND_SURFING,Wind Surfing
+ADULTS_ONLY,Adults Only
+CAR_NECESSARY,Car Necessary
+CAR_RECOMMENDED,Car Recommended
+CAR_NOT_NECESSARY,Car Not Necessary
+CHILDREN_NOT_ALLOWED,Children Not Allowed
+CHILDREN_WELCOME,Children Welcome
+EVENTS_ALLOWED,Events Allowed
+INFANTS_NOT_ALLOWED,Infants not allowed
+LONG_TERM_RENTERS,Long Term Renters
+MINIMUM_AGE_LIMIT,Minimum Age Limit
+SENIOR_ADULTS_ONLY,Senior Adults Only
+SMOKING_ALLOWED,Smoking Allowed
+SMOKING_NOT_ALLOWED,Smoking Not Allowed
+DISABLED_ACCESSIBLE,Accessible for Disabled
+WHEELCHAIR_YES,Wheelchair accessible
+WHEELCHAIR_NO,Not Wheelchair accessible

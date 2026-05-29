@@ -1,0 +1,1399 @@
+Array
+(
+    [0] => Array
+        (
+            [success] => 
+            [errors] => Array
+                (
+                    [0] => Array
+                        (
+                            [action] => captureStripeSession
+                            [message] => invalid bookingId
+                        )
+
+                )
+
+        )
+
+)
+
+
+-----
+
+Array
+(
+    [0] => Array
+        (
+            [success] => 
+            [errors] => Array
+                (
+                    [0] => Array
+                        (
+                            [action] => captureStripeSession
+                            [message] => invalid bookingId
+                        )
+
+                )
+
+        )
+
+)
+
+
+-----
+
+Array
+(
+    [0] => Array
+        (
+            [success] => 
+            [errors] => Array
+                (
+                    [0] => Array
+                        (
+                            [action] => captureStripeSession
+                            [message] => invalid bookingId
+                        )
+
+                )
+
+        )
+
+)
+
+
+-----
+
+Array
+(
+    [0] => Array
+        (
+            [success] => 
+            [errors] => Array
+                (
+                    [0] => Array
+                        (
+                            [action] => captureStripeSession
+                            [field] => actions
+                            [message] => invalid
+                        )
+
+                )
+
+        )
+
+)
+
+
+-----
+
+Array
+(
+    [success] => 
+    [code] => 500
+    [error] => Could not process request
+)
+
+
+-----
+
+Array
+(
+    [0] => Array
+        (
+            [success] => 1
+        )
+
+)
+
+
+-----
+
+Array
+(
+    [success] => 1
+    [type] => booking
+    [count] => 8
+    [pages] => Array
+        (
+            [nextPageExists] => 
+            [nextPageLink] => 
+        )
+
+    [data] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 79257538
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 1
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-10
+                    [departure] => 2025-12-12
+                    [numAdult] => 2
+                    [numChild] => 1
+                    [title] => 
+                    [firstName] => Raj
+                    [lastName] => Saini
+                    [email] => boldertechno@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-07T04:45:22Z
+                    [modifiedTime] => 2025-12-07T04:51:24Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => cus_TYhLdKu7gClhz4
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+            [1] => Array
+                (
+                    [id] => 79183486
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 8
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-08
+                    [departure] => 2025-12-13
+                    [numAdult] => 1
+                    [numChild] => 1
+                    [title] => 
+                    [firstName] => RAJNEESH
+                    [lastName] => SAINI
+                    [email] => rajnish123saini@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-05T06:26:28Z
+                    [modifiedTime] => 2025-12-05T06:26:28Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => 
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+            [2] => Array
+                (
+                    [id] => 79183485
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 7
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-08
+                    [departure] => 2025-12-13
+                    [numAdult] => 2
+                    [numChild] => 2
+                    [title] => 
+                    [firstName] => RAJNEESH
+                    [lastName] => SAINI
+                    [email] => rajnish123saini@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-05T06:26:28Z
+                    [modifiedTime] => 2025-12-05T06:26:28Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => 
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+            [3] => Array
+                (
+                    [id] => 79183463
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 6
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-08
+                    [departure] => 2025-12-13
+                    [numAdult] => 1
+                    [numChild] => 1
+                    [title] => 
+                    [firstName] => RAJNEESH
+                    [lastName] => SAINI
+                    [email] => rajnish123saini@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-05T06:25:43Z
+                    [modifiedTime] => 2025-12-05T06:25:43Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => 
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+            [4] => Array
+                (
+                    [id] => 79183462
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 5
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-08
+                    [departure] => 2025-12-13
+                    [numAdult] => 2
+                    [numChild] => 2
+                    [title] => 
+                    [firstName] => RAJNEESH
+                    [lastName] => SAINI
+                    [email] => rajnish123saini@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-05T06:25:43Z
+                    [modifiedTime] => 2025-12-05T06:25:43Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => 
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+            [5] => Array
+                (
+                    [id] => 79183444
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 4
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-08
+                    [departure] => 2025-12-13
+                    [numAdult] => 1
+                    [numChild] => 1
+                    [title] => 
+                    [firstName] => RAJNEESH
+                    [lastName] => SAINI
+                    [email] => rajnish123saini@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-05T06:25:31Z
+                    [modifiedTime] => 2025-12-05T06:25:31Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => 
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+            [6] => Array
+                (
+                    [id] => 79183443
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 3
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-08
+                    [departure] => 2025-12-13
+                    [numAdult] => 2
+                    [numChild] => 2
+                    [title] => 
+                    [firstName] => RAJNEESH
+                    [lastName] => SAINI
+                    [email] => rajnish123saini@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-05T06:25:31Z
+                    [modifiedTime] => 2025-12-05T06:25:31Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => 
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+            [7] => Array
+                (
+                    [id] => 79183442
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 2
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-08
+                    [departure] => 2025-12-13
+                    [numAdult] => 1
+                    [numChild] => 1
+                    [title] => 
+                    [firstName] => RAJNEESH
+                    [lastName] => SAINI
+                    [email] => rajnish123saini@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-05T06:25:30Z
+                    [modifiedTime] => 2025-12-05T06:25:30Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => 
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+        )
+
+)
+
+
+-----
+
+Array
+(
+    [success] => 1
+    [type] => booking
+    [count] => 8
+    [pages] => Array
+        (
+            [nextPageExists] => 
+            [nextPageLink] => 
+        )
+
+    [data] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 79257538
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 1
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-10
+                    [departure] => 2025-12-12
+                    [numAdult] => 2
+                    [numChild] => 1
+                    [title] => 
+                    [firstName] => Raj
+                    [lastName] => Saini
+                    [email] => boldertechno@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-07T04:45:22Z
+                    [modifiedTime] => 2025-12-07T04:51:24Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => cus_TYhLdKu7gClhz4
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+            [1] => Array
+                (
+                    [id] => 79183486
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 8
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-08
+                    [departure] => 2025-12-13
+                    [numAdult] => 1
+                    [numChild] => 1
+                    [title] => 
+                    [firstName] => RAJNEESH
+                    [lastName] => SAINI
+                    [email] => rajnish123saini@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-05T06:26:28Z
+                    [modifiedTime] => 2025-12-05T06:26:28Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => 
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+            [2] => Array
+                (
+                    [id] => 79183485
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 7
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-08
+                    [departure] => 2025-12-13
+                    [numAdult] => 2
+                    [numChild] => 2
+                    [title] => 
+                    [firstName] => RAJNEESH
+                    [lastName] => SAINI
+                    [email] => rajnish123saini@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-05T06:26:28Z
+                    [modifiedTime] => 2025-12-05T06:26:28Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => 
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+            [3] => Array
+                (
+                    [id] => 79183463
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 6
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-08
+                    [departure] => 2025-12-13
+                    [numAdult] => 1
+                    [numChild] => 1
+                    [title] => 
+                    [firstName] => RAJNEESH
+                    [lastName] => SAINI
+                    [email] => rajnish123saini@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-05T06:25:43Z
+                    [modifiedTime] => 2025-12-05T06:25:43Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => 
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+            [4] => Array
+                (
+                    [id] => 79183462
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 5
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-08
+                    [departure] => 2025-12-13
+                    [numAdult] => 2
+                    [numChild] => 2
+                    [title] => 
+                    [firstName] => RAJNEESH
+                    [lastName] => SAINI
+                    [email] => rajnish123saini@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-05T06:25:43Z
+                    [modifiedTime] => 2025-12-05T06:25:43Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => 
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+            [5] => Array
+                (
+                    [id] => 79183444
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 4
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-08
+                    [departure] => 2025-12-13
+                    [numAdult] => 1
+                    [numChild] => 1
+                    [title] => 
+                    [firstName] => RAJNEESH
+                    [lastName] => SAINI
+                    [email] => rajnish123saini@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-05T06:25:31Z
+                    [modifiedTime] => 2025-12-05T06:25:31Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => 
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+            [6] => Array
+                (
+                    [id] => 79183443
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 3
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-08
+                    [departure] => 2025-12-13
+                    [numAdult] => 2
+                    [numChild] => 2
+                    [title] => 
+                    [firstName] => RAJNEESH
+                    [lastName] => SAINI
+                    [email] => rajnish123saini@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-05T06:25:31Z
+                    [modifiedTime] => 2025-12-05T06:25:31Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => 
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+            [7] => Array
+                (
+                    [id] => 79183442
+                    [masterId] => 
+                    [propertyId] => 301355
+                    [roomId] => 628783
+                    [unitId] => 2
+                    [roomQty] => 1
+                    [offerId] => 0
+                    [status] => confirmed
+                    [subStatus] => none
+                    [arrival] => 2025-12-08
+                    [departure] => 2025-12-13
+                    [numAdult] => 1
+                    [numChild] => 1
+                    [title] => 
+                    [firstName] => RAJNEESH
+                    [lastName] => SAINI
+                    [email] => rajnish123saini@gmail.com
+                    [phone] => 
+                    [mobile] => 8729064430
+                    [fax] => 
+                    [company] => 
+                    [address] => 
+                    [city] => 
+                    [state] => 
+                    [postcode] => 
+                    [country] => 
+                    [country2] => 
+                    [arrivalTime] => 
+                    [voucher] => 
+                    [comments] => 
+                    [notes] => 
+                    [message] => 
+                    [groupNote] => 
+                    [custom1] => 
+                    [custom2] => 
+                    [custom3] => 
+                    [custom4] => 
+                    [custom5] => 
+                    [custom6] => 
+                    [custom7] => 
+                    [custom8] => 
+                    [custom9] => 
+                    [custom10] => 
+                    [flagColor] => 
+                    [flagText] => 
+                    [statusCode] => 0
+                    [lang] => 
+                    [referer] => API
+                    [refererEditable] => 
+                    [reference] => 
+                    [channel] => direct
+                    [apiSourceId] => 0
+                    [apiSource] => Direct
+                    [apiReference] => 
+                    [allowChannelUpdate] => all
+                    [allowAutoAction] => enable
+                    [allowReview] => default
+                    [allowCancellation] => Array
+                        (
+                            [type] => propertyDefault
+                        )
+
+                    [invoiceeId] => 
+                    [bookingTime] => 2025-12-05T06:25:30Z
+                    [modifiedTime] => 2025-12-05T06:25:30Z
+                    [cancelTime] => 
+                    [price] => 0
+                    [deposit] => 0
+                    [tax] => 0
+                    [commission] => 0
+                    [rateDescription] => 
+                    [stripeToken] => 
+                    [pcibookingToken] => 
+                    [apiMessage] => 
+                )
+
+        )
+
+)
+
+
+-----
+
